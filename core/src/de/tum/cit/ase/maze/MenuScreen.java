@@ -2,6 +2,7 @@ package de.tum.cit.ase.maze;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -12,6 +13,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import games.spooky.gdx.nativefilechooser.NativeFileChooserCallback;
+import games.spooky.gdx.nativefilechooser.NativeFileChooserConfiguration;
+import games.spooky.gdx.nativefilechooser.NativeFileChooserIntent;
 
 /**
  * The MenuScreen class is responsible for displaying the main menu of the game.
@@ -47,6 +51,34 @@ public class MenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 game.goToGame(); // Change to the game screen when button is pressed
+            }
+        });
+        TextButton SelectMap = new TextButton("Select map", game.getSkin());
+        table.add(SelectMap).width(300).row();
+        SelectMap.addListener(new ChangeListener(){
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                var fileChooserConfig = new NativeFileChooserConfiguration();
+                fileChooserConfig.title = "Pick a maze file"; // Title of the window that will be opened
+                fileChooserConfig.intent = NativeFileChooserIntent.OPEN; // We want to open a file
+                fileChooserConfig.nameFilter = (file, name) -> name.endsWith("properties"); // Only accept .properties files
+                fileChooserConfig.directory = Gdx.files.absolute(System.getProperty("user.home")); // Open at the user's home directory
+                game.getFileChooser().chooseFile(fileChooserConfig, new NativeFileChooserCallback() {
+                    @Override
+                    public void onFileChosen(FileHandle fileHandle) {
+                        // Do something with fileHandle
+                    }
+
+                    @Override
+                    public void onCancellation() {
+                        // User closed the window, don't need to do anything
+                    }
+
+                    @Override
+                    public void onError(Exception exception) {
+                        System.err.println("Error picking maze file: " + exception.getMessage());
+                    }
+                });
             }
         });
     }

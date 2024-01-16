@@ -3,6 +3,7 @@ package de.tum.cit.ase.maze;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -10,6 +11,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import games.spooky.gdx.nativefilechooser.NativeFileChooser;
+import games.spooky.gdx.nativefilechooser.NativeFileChooserCallback;
+import games.spooky.gdx.nativefilechooser.NativeFileChooserConfiguration;
+import games.spooky.gdx.nativefilechooser.NativeFileChooserIntent;
+
+import java.nio.file.FileSystems;
 
 /**
  * The MazeRunnerGame class represents the core of the Maze Runner game.
@@ -29,6 +35,12 @@ public class MazeRunnerGame extends Game {
     // Character animation downwards
     private Animation<TextureRegion> characterDownAnimation;
 
+    public NativeFileChooser getFileChooser() {
+        return fileChooser;
+    }
+
+    private NativeFileChooser fileChooser;
+
     /**
      * Constructor for MazeRunnerGame.
      *
@@ -36,6 +48,7 @@ public class MazeRunnerGame extends Game {
      */
     public MazeRunnerGame(NativeFileChooser fileChooser) {
         super();
+        this.fileChooser = fileChooser;
     }
 
     /**

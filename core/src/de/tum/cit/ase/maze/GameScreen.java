@@ -34,6 +34,7 @@ public class GameScreen implements Screen {
 
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
+
     }
 
 
