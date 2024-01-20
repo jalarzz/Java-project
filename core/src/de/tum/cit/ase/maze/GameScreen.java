@@ -114,16 +114,20 @@ public class GameScreen implements Screen {
         game.getSpriteBatch().begin(); // Important to call this before drawing anything
 
         // Render the text
-        font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY);
+       // font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY);
 
-        // Draw the character next to the text :) / We can reuse sinusInput here
+       /* // Draw the character next to the text :) / We can reuse sinusInput here
         game.getSpriteBatch().draw(
                 game.getCharacterDownAnimation().getKeyFrame(sinusInput, true),
                 textX - 96,
                 textY - 64,
                 64,
                 128
-        );
+        );*/
+        // Render the maze elements
+        for (MazeElement element : mazeElements) {
+            element.draw(game.getSpriteBatch());
+        }
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything
     }

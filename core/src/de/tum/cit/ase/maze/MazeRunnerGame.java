@@ -85,6 +85,10 @@ public class MazeRunnerGame extends Game {
         enemyTextureRegion = new TextureRegion(mazeElementsTexture, 64, 0, 16, 16);
         keyTextureRegion = new TextureRegion(mazeElementsTexture, 80, 0, 16, 16);
 
+        spriteBatch.begin();
+        spriteBatch.draw(wallTextureRegion, 16, 16); // drawX, drawY are screen coordinates where you want to draw the region
+        spriteBatch.end();
+
 
         // Play some background music
         // Background sound
