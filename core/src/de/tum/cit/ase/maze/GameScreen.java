@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 /**
@@ -19,6 +20,10 @@ public class GameScreen implements Screen {
 
     private float sinusInput = 0f;
 
+    private Array<MazeElement> mazeElements;
+
+
+
     /**
      * Constructor for GameScreen. Sets up the camera and font.
      *
@@ -26,6 +31,10 @@ public class GameScreen implements Screen {
      */
     public GameScreen(MazeRunnerGame game) {
         this.game = game;
+
+        this.mazeElements = new Array<>();
+
+        this.loadMazeElements();
 
         // Create and configure the camera for the game view
         camera = new OrthographicCamera();
@@ -35,6 +44,50 @@ public class GameScreen implements Screen {
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
 
+    }
+
+    //Load maze elements
+    private void loadMazeElements() {
+        // Assuming Maze class provides the layout and methods to access it
+        int[][] layout = game.getMaze().getLayout();
+        for (int i = 0; i < layout.length; i++) {
+            for (int j = 0; j < layout[i].length; j++) {
+                MazeElement element = createElementFromType(layout[i][j], i, j);
+                if (element != null) {
+                    mazeElements.add(element);
+                }
+            }
+        }
+    }
+
+    //Create elements of each type
+    private MazeElement createElementFromType(int type, int x, int y) {
+        // The x and y coordinates might need to be adjusted or scaled
+        // depending on your game's coordinate system and tile size.
+        final int tileSize = 16; // Example tile size, adjust as needed.
+
+        switch (type) {
+            case 0: // Wall
+                return new Wall(MazeRunnerGame.getWallTextureRegion(),x * tileSize, y * tileSize);
+
+            case 1: // Entry point
+                return new EntryPoint(MazeRunnerGame.getEntryPointTextureRegion(),x * tileSize, y * tileSize);
+
+            case 2: // Exit
+                return new Exit(MazeRunnerGame.getExitTextureRegion(),x * tileSize, y * tileSize);
+
+            case 3: // Trap (static obstacle)
+                return new Trap(MazeRunnerGame.getTrapTextureRegion(),x * tileSize, y * tileSize);
+
+            case 4: // Enemy (dynamic obstacle)
+                return new Enemy(MazeRunnerGame.getEnemyTextureRegion(),x * tileSize, y * tileSize);
+
+            case 5: // Key
+                return new Key(MazeRunnerGame.getKeyTextureRegion(),x * tileSize, y * tileSize);
+
+            default:
+                return null; // For undefined types, return null or a default type
+        }
     }
 
 

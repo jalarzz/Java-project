@@ -11,11 +11,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import games.spooky.gdx.nativefilechooser.NativeFileChooser;
-import games.spooky.gdx.nativefilechooser.NativeFileChooserCallback;
-import games.spooky.gdx.nativefilechooser.NativeFileChooserConfiguration;
-import games.spooky.gdx.nativefilechooser.NativeFileChooserIntent;
 
-import java.nio.file.FileSystems;
 
 /**
  * The MazeRunnerGame class represents the core of the Maze Runner game.
@@ -32,6 +28,23 @@ public class MazeRunnerGame extends Game {
     // UI Skin
     private Skin skin;
 
+    // Texture regions for each maze element
+    private static TextureRegion wallTextureRegion;
+    private static TextureRegion entryPointTextureRegion;
+    private static TextureRegion exitTextureRegion;
+    private static TextureRegion trapTextureRegion;
+    private static TextureRegion enemyTextureRegion;
+    private static TextureRegion keyTextureRegion;
+
+    // The texture containing all the elements
+    private Texture mazeElementsTexture;
+    //Maze
+    private Maze maze;
+
+    public Maze getMaze() {
+        return maze;
+    }
+
     // Character animation downwards
     private Animation<TextureRegion> characterDownAnimation;
 
@@ -39,7 +52,7 @@ public class MazeRunnerGame extends Game {
         return fileChooser;
     }
 
-    private NativeFileChooser fileChooser;
+    private final NativeFileChooser fileChooser;
 
     /**
      * Constructor for MazeRunnerGame.
@@ -59,6 +72,19 @@ public class MazeRunnerGame extends Game {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
         this.loadCharacterAnimation(); // Load character animation
+
+        // Load the sprite sheet
+        mazeElementsTexture = new Texture(Gdx.files.internal("basictiles.png"));
+
+        // Initialize TextureRegions for each element
+        // Adjust the coordinates (x, y) and dimensions (width, height) as per your sprite sheet layout
+        wallTextureRegion = new TextureRegion(mazeElementsTexture, 0, 0, 16, 16);
+        entryPointTextureRegion = new TextureRegion(mazeElementsTexture, 16, 0, 16, 16);
+        exitTextureRegion = new TextureRegion(mazeElementsTexture, 32, 0, 16, 16);
+        trapTextureRegion = new TextureRegion(mazeElementsTexture, 48, 0, 16, 16);
+        enemyTextureRegion = new TextureRegion(mazeElementsTexture, 64, 0, 16, 16);
+        keyTextureRegion = new TextureRegion(mazeElementsTexture, 80, 0, 16, 16);
+
 
         // Play some background music
         // Background sound
@@ -90,6 +116,11 @@ public class MazeRunnerGame extends Game {
             menuScreen = null;
         }
     }
+    public void loadMaze(FileHandle fileHandle) {
+        this.maze = new Maze(fileHandle);
+        goToGame(); // Go to the game screen after loading the maze
+    }
+
 
     /**
      * Loads the character animation from the character.png file.
@@ -121,6 +152,7 @@ public class MazeRunnerGame extends Game {
         getScreen().dispose(); // Dispose the current screen
         spriteBatch.dispose(); // Dispose the spriteBatch
         skin.dispose(); // Dispose the skin
+        mazeElementsTexture.dispose(); // Dispose the texture
     }
 
     // Getter methods
@@ -135,4 +167,11 @@ public class MazeRunnerGame extends Game {
     public SpriteBatch getSpriteBatch() {
         return spriteBatch;
     }
+    // Getters for each TextureRegion
+    public static TextureRegion getWallTextureRegion() { return wallTextureRegion; }
+    public static TextureRegion getEntryPointTextureRegion() { return entryPointTextureRegion; }
+    public static TextureRegion getExitTextureRegion() { return exitTextureRegion; }
+    public static TextureRegion getTrapTextureRegion() { return trapTextureRegion; }
+    public static TextureRegion getEnemyTextureRegion() { return enemyTextureRegion; }
+    public static TextureRegion getKeyTextureRegion() { return keyTextureRegion; }
 }

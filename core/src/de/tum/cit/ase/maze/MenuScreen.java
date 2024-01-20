@@ -67,6 +67,8 @@ public class MenuScreen implements Screen {
                     @Override
                     public void onFileChosen(FileHandle fileHandle) {
                         // Do something with fileHandle
+                        // Load the maze and switch to the game screen with the chosen maze file
+                        game.loadMaze(fileHandle);
                     }
 
                     @Override
