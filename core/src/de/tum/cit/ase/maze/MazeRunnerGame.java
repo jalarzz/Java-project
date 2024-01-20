@@ -89,7 +89,7 @@ public class MazeRunnerGame extends Game {
         trapTextureRegion = new TextureRegion(obstaclesTexture, 96, 42, 22, 22);
         enemyTextureRegion = new TextureRegion(mobsTexture, 144, 0, 16, 16);
         keyTextureRegion = new TextureRegion(mazeElementsTexture, 64, 64, 16, 16);
-        floorTextureRegion = new TextureRegion(mazeElementsTexture, 16, 0, 16, 16);
+        floorTextureRegion = new TextureRegion(mazeElementsTexture, 0, 16, 16, 16);
 
 
 

@@ -1,6 +1,7 @@
 package de.tum.cit.ase.maze;
 import com.badlogic.gdx.files.FileHandle;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Properties;
 
 /**
@@ -29,6 +30,10 @@ public class Maze {
             int[] size = determineMazeSize(properties);
             if (size[0] > 0 && size[1] > 0) {
                 layout = new int[size[0]][size[1]];
+                // Initialize the layout with floor value (-1)
+                for (int i = 0; i < layout.length; i++) {
+                    Arrays.fill(layout[i], -1); // Fill row with floor value
+                }
                 parseProperties(properties);
                 isValidMaze = true;
             } else {
@@ -76,7 +81,7 @@ public class Maze {
                 int x = Integer.parseInt(coords[0]);
                 int y = Integer.parseInt(coords[1]);
                 int type = Integer.parseInt((String) value);
-                layout[x][layout[0].length - y - 1] = type;
+                layout[x][y] = type;
             } catch (NumberFormatException e) {
                 System.err.println("Invalid format in maze file for key: " + key);
             }

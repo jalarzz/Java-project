@@ -67,6 +67,9 @@ public class GameScreen implements Screen {
         final int tileSize = 16; // Example tile size, adjust as needed.
 
         switch (type) {
+            case -1: // Floor
+                return new Floor(MazeRunnerGame.getFloorTextureRegion(), x * tileSize, y * tileSize);
+
             case 0: // Wall
                 return new Wall(MazeRunnerGame.getWallTextureRegion(),x * tileSize, y * tileSize);
 
@@ -86,7 +89,7 @@ public class GameScreen implements Screen {
                 return new Key(MazeRunnerGame.getKeyTextureRegion(),x * tileSize, y * tileSize);
 
             default:
-                return new Floor(MazeRunnerGame.getFloorTextureRegion(),x * tileSize, y * tileSize); // For undefined types, return null or a default type
+                return null; // For undefined types, return null
         }
     }
 
@@ -125,8 +128,25 @@ public class GameScreen implements Screen {
                 128
         );*/
         // Render the maze elements
-        for (MazeElement element : mazeElements) {
+       /* for (MazeElement element : mazeElements) {
             element.draw(game.getSpriteBatch());
+        }*/
+        for (MazeElement element : mazeElements) {
+            if (element instanceof Wall || element instanceof Exit) {
+                // For Walls and Exits, render them normally without floor below
+                element.draw(game.getSpriteBatch());
+            } else {
+                // For other elements, render the floor below first
+                game.getSpriteBatch().draw(
+                        MazeRunnerGame.getFloorTextureRegion(),
+                        element.getX(),
+                        element.getY()
+
+                );
+
+                // Then, render the element itself on top
+                element.draw(game.getSpriteBatch());
+            }
         }
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything
