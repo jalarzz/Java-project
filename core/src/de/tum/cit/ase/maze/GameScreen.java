@@ -86,7 +86,7 @@ public class GameScreen implements Screen {
                 return new Key(MazeRunnerGame.getKeyTextureRegion(),x * tileSize, y * tileSize);
 
             default:
-                return null; // For undefined types, return null or a default type
+                return new Floor(MazeRunnerGame.getFloorTextureRegion(),x * tileSize, y * tileSize); // For undefined types, return null or a default type
         }
     }
 

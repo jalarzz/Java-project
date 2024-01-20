@@ -35,9 +35,12 @@ public class MazeRunnerGame extends Game {
     private static TextureRegion trapTextureRegion;
     private static TextureRegion enemyTextureRegion;
     private static TextureRegion keyTextureRegion;
+    private static TextureRegion floorTextureRegion;
 
     // The texture containing all the elements
     private Texture mazeElementsTexture;
+    private Texture obstaclesTexture;
+    private Texture mobsTexture;
     //Maze
     private Maze maze;
 
@@ -75,19 +78,19 @@ public class MazeRunnerGame extends Game {
 
         // Load the sprite sheet
         mazeElementsTexture = new Texture(Gdx.files.internal("basictiles.png"));
+        obstaclesTexture = new Texture(Gdx.files.internal("objects.png"));
+        mobsTexture = new Texture(Gdx.files.internal("mobs.png"));
 
         // Initialize TextureRegions for each element
         // Adjust the coordinates (x, y) and dimensions (width, height) as per your sprite sheet layout
         wallTextureRegion = new TextureRegion(mazeElementsTexture, 0, 0, 16, 16);
         entryPointTextureRegion = new TextureRegion(mazeElementsTexture, 16, 0, 16, 16);
-        exitTextureRegion = new TextureRegion(mazeElementsTexture, 32, 0, 16, 16);
-        trapTextureRegion = new TextureRegion(mazeElementsTexture, 48, 0, 16, 16);
-        enemyTextureRegion = new TextureRegion(mazeElementsTexture, 64, 0, 16, 16);
-        keyTextureRegion = new TextureRegion(mazeElementsTexture, 80, 0, 16, 16);
+        exitTextureRegion = new TextureRegion(mazeElementsTexture, 0, 96, 16, 16);
+        trapTextureRegion = new TextureRegion(obstaclesTexture, 96, 42, 22, 22);
+        enemyTextureRegion = new TextureRegion(mobsTexture, 144, 0, 16, 16);
+        keyTextureRegion = new TextureRegion(mazeElementsTexture, 64, 64, 16, 16);
+        floorTextureRegion = new TextureRegion(mazeElementsTexture, 16, 0, 16, 16);
 
-        spriteBatch.begin();
-        spriteBatch.draw(wallTextureRegion, 16, 16); // drawX, drawY are screen coordinates where you want to draw the region
-        spriteBatch.end();
 
 
         // Play some background music
@@ -178,4 +181,8 @@ public class MazeRunnerGame extends Game {
     public static TextureRegion getTrapTextureRegion() { return trapTextureRegion; }
     public static TextureRegion getEnemyTextureRegion() { return enemyTextureRegion; }
     public static TextureRegion getKeyTextureRegion() { return keyTextureRegion; }
+    public static TextureRegion getFloorTextureRegion() {
+        return floorTextureRegion;
+    }
+
 }
