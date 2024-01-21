@@ -122,6 +122,7 @@ public class GameScreen implements Screen {
         // Set up and begin drawing with the sprite batch
         game.getSpriteBatch().setProjectionMatrix(camera.combined);
 
+
         game.getSpriteBatch().begin(); // Important to call this before drawing anything
 
         // Render the text
