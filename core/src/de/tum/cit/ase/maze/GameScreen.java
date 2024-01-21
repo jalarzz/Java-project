@@ -4,7 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
@@ -87,8 +89,9 @@ public class GameScreen implements Screen {
             case 2: // Exit
                 return new Exit(MazeRunnerGame.getExitTextureRegion(),x * tileSize, y * tileSize);
 
-            case 3: // Trap (static obstacle)
-                return new Trap(MazeRunnerGame.getTrapTextureRegion(),x * tileSize, y * tileSize);
+            case 3: // Trap
+                Animation<TextureRegion> trapAnimation = game.loadTrapAnimation();
+                return new Trap(trapAnimation, x * tileSize, y * tileSize);
 
             case 4: // Enemy (dynamic obstacle)
                 return new Enemy(MazeRunnerGame.getEnemyTextureRegion(),x * tileSize, y * tileSize);
@@ -141,27 +144,30 @@ public class GameScreen implements Screen {
             element.draw(game.getSpriteBatch());
         }*/
         for (MazeElement element : mazeElements) {
+            // Draw the floor for every element
             game.getSpriteBatch().draw(
                     MazeRunnerGame.getFloorTextureRegion(),
                     element.getX() + camera.position.x,
                     element.getY() + camera.position.y
-
             );
-            if (element instanceof Wall || element instanceof Exit) {
+
+            if (element instanceof Trap) {
+                Trap trap = (Trap) element;
+                trap.update(Gdx.graphics.getDeltaTime());
+                trap.draw(game.getSpriteBatch(), camera);
+            } else if (element instanceof Wall || element instanceof Exit) {
                 // For Walls and Exits, render them normally without floor below
                 element.draw(game.getSpriteBatch(), camera);
-            }
-            else if(element instanceof Enemy enemy){
-                game.getCharacterDownAnimation().getKeyFrame(sinusInput, true);
+            } else if (element instanceof Enemy) {
+                // If there are special considerations for enemies, handle them here
+                Enemy enemy = (Enemy) element;
                 enemy.draw(game.getSpriteBatch(), camera);
-            }
-            else {
-                // For other elements, render the floor below first
-
-                // Then, render the element itself on top
+            } else {
+                // For other elements, render them on top of the floor
                 element.draw(game.getSpriteBatch(), camera);
             }
         }
+
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything
     }

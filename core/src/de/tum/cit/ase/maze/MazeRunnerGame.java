@@ -32,7 +32,7 @@ public class MazeRunnerGame extends Game {
     private static TextureRegion wallTextureRegion;
     private static TextureRegion entryPointTextureRegion;
     private static TextureRegion exitTextureRegion;
-    private static TextureRegion trapTextureRegion;
+    //private static TextureRegion trapTextureRegion;
     private static TextureRegion enemyTextureRegion;
     private static TextureRegion keyTextureRegion;
     private static TextureRegion floorTextureRegion;
@@ -86,7 +86,7 @@ public class MazeRunnerGame extends Game {
         wallTextureRegion = new TextureRegion(mazeElementsTexture, 0, 0, 16, 16);
         entryPointTextureRegion = new TextureRegion(mazeElementsTexture, 16, 0, 16, 16);
         exitTextureRegion = new TextureRegion(mazeElementsTexture, 0, 96, 16, 16);
-        trapTextureRegion = new TextureRegion(obstaclesTexture, 96, 42, 22, 22);
+        //trapTextureRegion = new TextureRegion(obstaclesTexture, 96, 42, 22, 22);
         enemyTextureRegion = new TextureRegion(mobsTexture, 144, 0, 16, 16);
         keyTextureRegion = new TextureRegion(mazeElementsTexture, 64, 64, 16, 16);
         floorTextureRegion = new TextureRegion(mazeElementsTexture, 0, 16, 16, 16);
@@ -149,6 +149,29 @@ public class MazeRunnerGame extends Game {
 
         characterDownAnimation = new Animation<>(0.1f, walkFrames);
     }
+    protected Animation<TextureRegion> loadTrapAnimation() {
+        Texture trapSheet = new Texture(Gdx.files.internal("objects.png")); // Adjust the file name as needed
+
+        int frameWidth = 16; // Adjust the frame width as per your sprite sheet
+        int frameHeight = 16; // Adjust the frame height as per your sprite sheet
+        int animationFrames = 7;// Number of frames in the trap animation
+        int startCol = 4; // Starting column for trap animation frames (adjust as needed)
+        int startRow = 3; // Starting row for trap animation frames (adjust as needed)
+
+
+        Array<TextureRegion> trapFrames = new Array<>(TextureRegion.class);
+
+        // Extract frames for the trap animation
+        for (int col = 0; col < animationFrames; col++) {
+            // Calculate the x and y position for each frame in the sprite sheet
+            int x = (startCol + col) * frameWidth;
+            int y = startRow * frameHeight;
+
+            trapFrames.add(new TextureRegion(trapSheet, x, y, frameWidth, frameHeight));
+        }
+
+        return new Animation<>(0.1f, trapFrames); // Adjust the frame duration as needed
+    }
 
     /**
      * Cleans up resources when the game is disposed.
@@ -178,7 +201,7 @@ public class MazeRunnerGame extends Game {
     public static TextureRegion getWallTextureRegion() { return wallTextureRegion; }
     public static TextureRegion getEntryPointTextureRegion() { return entryPointTextureRegion; }
     public static TextureRegion getExitTextureRegion() { return exitTextureRegion; }
-    public static TextureRegion getTrapTextureRegion() { return trapTextureRegion; }
+    //public static TextureRegion getTrapTextureRegion() { return trapTextureRegion; }
     public static TextureRegion getEnemyTextureRegion() { return enemyTextureRegion; }
     public static TextureRegion getKeyTextureRegion() { return keyTextureRegion; }
     public static TextureRegion getFloorTextureRegion() {
