@@ -1,5 +1,6 @@
 package de.tum.cit.ase.maze;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
@@ -14,8 +15,8 @@ public abstract class MazeElement {
         this.y = y;
     }
 
-    public void draw(SpriteBatch batch) {
-        batch.draw(texture, x, y);
+    public void draw(SpriteBatch batch, OrthographicCamera cam) {
+        batch.draw(texture, x + cam.position.x, y + cam.position.y);
     }
 
     public TextureRegion getTexture() {

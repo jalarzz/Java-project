@@ -44,6 +44,14 @@ public class GameScreen implements Screen {
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
 
+        /**
+         * create game character here and make him start at the spawn. at the same time, it should
+         * have a connection with the camera as when the player moves, the camera also should
+         * I recommend that the input will be checked after the character has successfully
+         * moved around or done an action
+         * there can be a priority list for what action should be counted first if multiple inputs are there
+         */
+
     }
 
     //Load maze elements
@@ -132,20 +140,25 @@ public class GameScreen implements Screen {
             element.draw(game.getSpriteBatch());
         }*/
         for (MazeElement element : mazeElements) {
+            game.getSpriteBatch().draw(
+                    MazeRunnerGame.getFloorTextureRegion(),
+                    element.getX() + camera.position.x,
+                    element.getY() + camera.position.y
+
+            );
             if (element instanceof Wall || element instanceof Exit) {
                 // For Walls and Exits, render them normally without floor below
-                element.draw(game.getSpriteBatch());
-            } else {
+                element.draw(game.getSpriteBatch(), camera);
+            }
+            else if(element instanceof Enemy enemy){
+                game.getCharacterDownAnimation().getKeyFrame(sinusInput, true);
+                enemy.draw(game.getSpriteBatch(), camera);
+            }
+            else {
                 // For other elements, render the floor below first
-                game.getSpriteBatch().draw(
-                        MazeRunnerGame.getFloorTextureRegion(),
-                        element.getX(),
-                        element.getY()
-
-                );
 
                 // Then, render the element itself on top
-                element.draw(game.getSpriteBatch());
+                element.draw(game.getSpriteBatch(), camera);
             }
         }
 
