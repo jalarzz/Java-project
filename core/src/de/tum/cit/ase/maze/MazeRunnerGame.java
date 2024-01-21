@@ -37,6 +37,7 @@ public class MazeRunnerGame extends Game {
     private static TextureRegion keyTextureRegion;
     private static TextureRegion floorTextureRegion;
 
+
     // The texture containing all the elements
     private Texture mazeElementsTexture;
     private Texture obstaclesTexture;
@@ -50,6 +51,12 @@ public class MazeRunnerGame extends Game {
 
     // Character animation downwards
     private Animation<TextureRegion> characterDownAnimation;
+    // Character animation upwards
+    private Animation<TextureRegion> characterUpAnimation;
+    // Character animation left
+    private Animation<TextureRegion> characterLeftAnimation;
+    // Character animation right
+    private Animation<TextureRegion> characterRightAnimation;
 
     public NativeFileChooser getFileChooser() {
         return fileChooser;
@@ -74,7 +81,7 @@ public class MazeRunnerGame extends Game {
     public void create() {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
-        this.loadCharacterAnimation(); // Load character animation
+        this.loadCharacterAnimations(); // Load character animations
 
         // Load the sprite sheet
         mazeElementsTexture = new Texture(Gdx.files.internal("basictiles.png"));
@@ -132,7 +139,7 @@ public class MazeRunnerGame extends Game {
     /**
      * Loads the character animation from the character.png file.
      */
-    private void loadCharacterAnimation() {
+    /*private void loadCharacterAnimation() {
         Texture walkSheet = new Texture(Gdx.files.internal("character.png"));
 
         int frameWidth = 16;
@@ -148,6 +155,46 @@ public class MazeRunnerGame extends Game {
         }
 
         characterDownAnimation = new Animation<>(0.1f, walkFrames);
+    }*/
+
+    public Animation<TextureRegion> getCharacterUpAnimation() {
+        return characterUpAnimation;
+    }
+
+    public Animation<TextureRegion> getCharacterLeftAnimation() {
+        return characterLeftAnimation;
+    }
+
+    public Animation<TextureRegion> getCharacterRightAnimation() {
+        return characterRightAnimation;
+    }
+
+    /**
+     * Loads the character animations from the character.png file.
+     */
+    private void loadCharacterAnimations() {
+        Texture walkSheet = new Texture(Gdx.files.internal("character.png"));
+
+        int frameWidth = 16;
+        int frameHeight = 32;
+        int animationFrames = 4; // Number of frames per direction
+
+        // Create animations for each direction
+        characterDownAnimation = createAnimation(walkSheet, 0, frameWidth, frameHeight, animationFrames);
+        characterLeftAnimation = createAnimation(walkSheet, 1, frameWidth, frameHeight, animationFrames);
+        characterRightAnimation = createAnimation(walkSheet, 2, frameWidth, frameHeight, animationFrames);
+        characterUpAnimation = createAnimation(walkSheet, 3, frameWidth, frameHeight, animationFrames);
+    }
+
+    /**
+     * Creates an animation from a specific row of a sprite sheet.
+     */
+    private Animation<TextureRegion> createAnimation(Texture sheet, int row, int frameWidth, int frameHeight, int frameCount) {
+        Array<TextureRegion> frames = new Array<>();
+        for (int i = 0; i < frameCount; i++) {
+            frames.add(new TextureRegion(sheet, i * frameWidth, row * frameHeight, frameWidth, frameHeight));
+        }
+        return new Animation<>(0.1f, frames);
     }
     protected Animation<TextureRegion> loadTrapAnimation() {
         Texture trapSheet = new Texture(Gdx.files.internal("objects.png")); // Adjust the file name as needed

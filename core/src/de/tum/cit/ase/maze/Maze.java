@@ -106,5 +106,36 @@ public class Maze {
         return isValidMaze;
     }
 
+    /**
+     * Checks if a move to the specified coordinates is valid.
+     *
+     * @param x The x-coordinate.
+     * @param y The y-coordinate.
+     * @return True if the move is valid, false otherwise.
+     */
+    public boolean isValidMove(int x, int y) {
+        // Check bounds
+        if (x < 0 || y < 0 || x >= layout.length || y >= layout[0].length) {
+            return false;
+        }
+        // Check if the location is not a wall (wall is typically represented by 0)
+        return layout[x][y] != 0;
+    }
+
+    /**
+     * Gets the type of element at the specified coordinates.
+     *
+     * @param x The x-coordinate.
+     * @param y The y-coordinate.
+     * @return The type of element at the coordinates, or -1 if out of bounds.
+     */
+    public int getElementAt(int x, int y) {
+        // Check bounds
+        if (x < 0 || y < 0 || x >= layout.length || y >= layout[0].length) {
+            return -1; // Indicating out of bounds or no element
+        }
+        return layout[x][y];
+    }
+
 }
 

@@ -23,6 +23,7 @@ public class GameScreen implements Screen {
     private float sinusInput = 0f;
 
     private Array<MazeElement> mazeElements;
+    private Character playerCharacter; // The player-controlled character
 
 
 
@@ -47,12 +48,17 @@ public class GameScreen implements Screen {
         font = game.getSkin().getFont("font");
 
         /**
+         * todo:
          * create game character here and make him start at the spawn. at the same time, it should
          * have a connection with the camera as when the player moves, the camera also should
          * I recommend that the input will be checked after the character has successfully
          * moved around or done an action
          * there can be a priority list for what action should be counted first if multiple inputs are there
          */
+        // Create the player character
+        initializePlayerCharacter();
+
+
 
     }
 
@@ -68,6 +74,38 @@ public class GameScreen implements Screen {
                 }
             }
         }
+    }
+    /**
+     * Initializes the player character with animation and positions it at the entry point.
+     */
+    private void initializePlayerCharacter() {
+        EntryPoint entryPoint = findEntryPoint();
+        if (entryPoint != null) {
+            int initialLives = 3; // Number of lives for the character
+            Animation<TextureRegion>[] animations = new Animation[]{
+                    game.getCharacterDownAnimation(),
+                    game.getCharacterLeftAnimation(),
+                    game.getCharacterRightAnimation(),
+                    game.getCharacterUpAnimation()
+            };
+            playerCharacter = new Character(animations, entryPoint.getX(), entryPoint.getY(), initialLives);
+            Gdx.app.log("GameScreen", "Character initialized at (" + entryPoint.getX() + ", " + entryPoint.getY() + ")");
+        }else {
+            Gdx.app.error("GameScreen", "Entry point not found, character not initialized");
+        }
+    }
+
+    /**
+     * Finds the entry point element from the maze elements.
+     * @return The entry point element.
+     */
+    private EntryPoint findEntryPoint() {
+        for (MazeElement element : mazeElements) {
+            if (element instanceof EntryPoint) {
+                return (EntryPoint) element;
+            }
+        }
+        throw new IllegalStateException("Entry point not found in the maze.");
     }
 
     //Create elements of each type
@@ -106,7 +144,7 @@ public class GameScreen implements Screen {
 
 
     // Screen interface methods with necessary functionality
-    @Override
+  @Override
     public void render(float delta) {
         // Check for escape key press to go back to the menu
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
@@ -115,12 +153,24 @@ public class GameScreen implements Screen {
 
         ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
 
-        camera.update(); // Update the camera
-
-        // Move text in a circular path to have an example of a moving object
+        // Update camera to center on the character
+        camera.position.set(playerCharacter.getX(), playerCharacter.getY(), 0);
+        camera.update();
+      // Handle input for character movement
+      if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+          playerCharacter.move(Direction.LEFT, game.getMaze());
+      } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+          playerCharacter.move(Direction.RIGHT, game.getMaze());
+      } else if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+          playerCharacter.move(Direction.UP, game.getMaze());
+      } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+          playerCharacter.move(Direction.DOWN, game.getMaze());
+      }
+      playerCharacter.update(Gdx.graphics.getDeltaTime());
+        /*// Move text in a circular path to have an example of a moving object
         sinusInput += delta;
         float textX = (float) (camera.position.x + Math.sin(sinusInput) * 100);
-        float textY = (float) (camera.position.y + Math.cos(sinusInput) * 100);
+        float textY = (float) (camera.position.y + Math.cos(sinusInput) * 100);*/
 
         // Set up and begin drawing with the sprite batch
         game.getSpriteBatch().setProjectionMatrix(camera.combined);
@@ -167,11 +217,16 @@ public class GameScreen implements Screen {
                 element.draw(game.getSpriteBatch(), camera);
             }
         }
-
+        if (playerCharacter != null) {
+            playerCharacter.update(Gdx.graphics.getDeltaTime());
+            playerCharacter.draw(game.getSpriteBatch(), camera);
+            Gdx.app.log("GameScreen", "Character drawn at (" + playerCharacter.getX() + ", " + playerCharacter.getY() + ")");
+        } else {
+            Gdx.app.error("GameScreen", "Character is null, not drawn");
+        }
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything
     }
-
     @Override
     public void resize(int width, int height) {
         camera.setToOrtho(false);
