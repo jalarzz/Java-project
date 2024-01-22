@@ -45,6 +45,11 @@ public class MazeRunnerGame extends Game {
     //Maze
     private Maze maze;
 
+    private TextureRegion fullHeartTexture;
+    private TextureRegion emptyHeartTexture;
+    private TextureRegion keyTexture;
+    private TextureRegion noKeyTexture;
+
     public Maze getMaze() {
         return maze;
     }
@@ -105,6 +110,7 @@ public class MazeRunnerGame extends Game {
         Music backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.play();
+        loadTextures();
 
         goToMenu(); // Navigate to the menu screen
     }
@@ -185,7 +191,14 @@ public class MazeRunnerGame extends Game {
         characterRightAnimation = createAnimation(walkSheet, 2, frameWidth, frameHeight, animationFrames);
         characterUpAnimation = createAnimation(walkSheet, 3, frameWidth, frameHeight, animationFrames);
     }
-
+    private void loadTextures() {
+        spriteBatch = new SpriteBatch(); // Create SpriteBatch
+        Texture spriteSheet = new Texture(Gdx.files.internal("objects.png")); // Adjust path and coordinates
+        fullHeartTexture = new TextureRegion(spriteSheet, 64, 0,16, 16);
+        emptyHeartTexture = new TextureRegion(spriteSheet, 128, 0,16,16);
+        keyTexture = new TextureRegion(spriteSheet,136,50, 16, 16);
+        noKeyTexture = new TextureRegion(spriteSheet,126,59, 16, 16);
+    }
     /**
      * Creates an animation from a specific row of a sprite sheet.
      */
@@ -273,4 +286,19 @@ public class MazeRunnerGame extends Game {
         return floorTextureRegion;
     }
 
+    public TextureRegion getFullHeartTexture() {
+        return fullHeartTexture;
+    }
+
+    public TextureRegion getEmptyHeartTexture() {
+        return emptyHeartTexture;
+    }
+
+    public TextureRegion getKeyTexture() {
+        return keyTexture;
+    }
+
+    public TextureRegion getNoKeyTexture() {
+        return noKeyTexture;
+    }
 }

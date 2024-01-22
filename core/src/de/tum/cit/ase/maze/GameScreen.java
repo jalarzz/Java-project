@@ -25,6 +25,8 @@ public class GameScreen implements Screen {
     private Array<MazeElement> mazeElements;
     private Character playerCharacter; // The player-controlled character
 
+    private HUD hud;
+
 
 
     /**
@@ -46,6 +48,13 @@ public class GameScreen implements Screen {
 
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
+        TextureRegion fullHeart = game.getFullHeartTexture();
+        TextureRegion emptyHeart = game.getEmptyHeartTexture();
+        TextureRegion keyTexture = game.getKeyTexture();
+        TextureRegion noKeyTexture = game.getNoKeyTexture();
+
+        // Initialize HUD
+        hud = new HUD(fullHeart, emptyHeart, keyTexture, noKeyTexture, 5);
 
         /**
          * todo:
@@ -81,7 +90,7 @@ public class GameScreen implements Screen {
     private void initializePlayerCharacter() {
         EntryPoint entryPoint = findEntryPoint();
         if (entryPoint != null) {
-            int initialLives = 3; // Number of lives for the character
+            int initialLives = 5; // Number of lives for the character
             Animation<TextureRegion>[] animations = new Animation[]{
                     game.getCharacterDownAnimation(),
                     game.getCharacterLeftAnimation(),
@@ -235,6 +244,9 @@ public class GameScreen implements Screen {
         }
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything
+      hud.updateHearts(playerCharacter.getLives(), game.getFullHeartTexture(), game.getEmptyHeartTexture());
+      hud.updateKey(playerCharacter.hasKey());
+      hud.draw();
     }
     @Override
     public void resize(int width, int height) {
