@@ -14,28 +14,36 @@ public class HUD {
     private Image keyImage;
     private TextureRegion keyTexture;
     private TextureRegion noKeyTexture;
+    private float heartSize = 32f; // Adjust the size of the hearts as needed
 
     public HUD(TextureRegion fullHeart, TextureRegion emptyHeart, TextureRegion keyTexture, TextureRegion noKeyTexture, int initialLives) {
         this.keyTexture = keyTexture;
         this.noKeyTexture = noKeyTexture;
 
         stage = new Stage(new ScreenViewport());
-        Table table = new Table();
-        table.top();
-        table.setFillParent(true);
+        Table leftTable = new Table();
+        Table rightTable = new Table();
 
-        // Add hearts
+        // Set up the left table for hearts
+        leftTable.top().left();
         hearts = new Image[initialLives];
         for (int i = 0; i < initialLives; i++) {
             hearts[i] = new Image(fullHeart);
-            table.add(hearts[i]).pad(10);
+            hearts[i].setSize(heartSize, heartSize); // Set the size of the heart images
+            leftTable.add(hearts[i]).pad(10);
         }
 
-        // Add key image
+        // Set up the right table for the key image
+        rightTable.top().right();
         keyImage = new Image(noKeyTexture);
-        table.add(keyImage).pad(10).top().right();
+        keyImage.setSize(heartSize, heartSize); // Set the size of the key image
+        rightTable.add(keyImage).pad(10);
 
-        stage.addActor(table);
+        // Add both tables to the stage
+        stage.addActor(leftTable);
+        stage.addActor(rightTable);
+        leftTable.setFillParent(true);
+        rightTable.setFillParent(true);
     }
 
     public void updateHearts(int currentLives, TextureRegion fullHeart, TextureRegion emptyHeart) {
