@@ -219,7 +219,25 @@ public class MazeRunnerGame extends Game {
 
         return new Animation<>(0.1f, trapFrames); // Adjust the frame duration as needed
     }
+    protected Animation<TextureRegion> loadLavaAnimation() {
+        Texture lavaSheet = new Texture(Gdx.files.internal("lava.png")); // Adjust the file name as needed
 
+        int frameWidth = 16; // Adjust the frame width as per your sprite sheet
+        int frameHeight = 16; // Adjust the frame height as per your sprite sheet
+        int animationFrames = 45; // Number of frames in the lava animation
+
+        Array<TextureRegion> lavaFrames = new Array<>(TextureRegion.class);
+
+        // Extract frames for the lava animation from all columns in a single row
+        for (int col = 0; col < animationFrames; col++) {
+            // Calculate the x and y position for each frame in the sprite sheet
+
+
+            lavaFrames.add(new TextureRegion(lavaSheet, col*frameWidth, 0, frameWidth, frameHeight));
+        }
+
+        return new Animation<>(0.1f, lavaFrames); // Adjust the frame duration as needed
+    }
     /**
      * Cleans up resources when the game is disposed.
      */

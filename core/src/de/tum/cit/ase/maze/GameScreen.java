@@ -136,6 +136,9 @@ public class GameScreen implements Screen {
 
             case 5: // Key
                 return new Key(MazeRunnerGame.getKeyTextureRegion(),x * tileSize, y * tileSize);
+            case 6: // Lava
+                Animation<TextureRegion> lavaAnimation = game.loadLavaAnimation();
+                return new Lava(lavaAnimation, x * tileSize, y * tileSize);
 
             default:
                 return null; // For undefined types, return null
@@ -205,14 +208,20 @@ public class GameScreen implements Screen {
                 Trap trap = (Trap) element;
                 trap.update(Gdx.graphics.getDeltaTime());
                 trap.draw(game.getSpriteBatch(), camera);
-            } else if (element instanceof Wall || element instanceof Exit) {
+            } else if (element instanceof Wall || element instanceof Exit ) {
                 // For Walls and Exits, render them normally without floor below
                 element.draw(game.getSpriteBatch(), camera);
             } else if (element instanceof Enemy) {
                 // If there are special considerations for enemies, handle them here
                 Enemy enemy = (Enemy) element;
                 enemy.draw(game.getSpriteBatch(), camera);
-            } else {
+            } else if (element instanceof Lava) {
+                Lava lava = (Lava) element;
+                lava.update(delta); // Update the lava animation
+                lava.draw(game.getSpriteBatch(), camera);
+
+            } else
+            {
                 // For other elements, render them on top of the floor
                 element.draw(game.getSpriteBatch(), camera);
             }
