@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 
 /**
  * Character class represents the player character in the game.
@@ -16,6 +17,12 @@ public class Character extends MazeElement implements Movable {
     private Animation<TextureRegion>[] animations;
     private float stateTime;
     private Direction currentDirection;
+    private OrthographicCamera camera;
+    private static final int TILE_SIZE = 16; // each tile is 16x16
+    private static final int CHAR_WIDTH = 16; // Character width
+    private static final int CHAR_HEIGHT = 32; // Character height
+
+
 
 
     /**
@@ -26,39 +33,101 @@ public class Character extends MazeElement implements Movable {
      * @param y Initial y-coordinate of the character.
      * @param lives Number of lives the character starts with.
      */
-    public Character(Animation<TextureRegion>[] animations, int x, int y, int lives) {
-        super(null, x, y); // texture is set to null initially
+    public Character(Animation<TextureRegion>[] animations, float x, float y, int lives, OrthographicCamera camera) {
+        super(null, x, y,CHAR_WIDTH,CHAR_HEIGHT); // texture is set to null initially
         this.animations = animations;
         this.lives = lives;
         this.hasKey = false;
         this.stateTime = 0f;
         this.currentDirection = null; // Default direction
+        this.camera = camera;
     }
 
     /**
      * Moves the character in the given direction if the move is valid.
+     * Checks for collision with maze elements and performs actions based on the type of collision.
      *
      * @param direction The direction to move the character.
      * @param maze      The maze to check for valid moves.
+     * @param delta     The time passed since the last frame.
      */
     @Override
-    public void move(Direction direction, Maze maze) {
-        int newX = x, newY = y;
+    public void move(Direction direction, Maze maze, float delta) {
+        float newX = x, newY = y;
+        float speed = TILE_SIZE * delta * 3; // Adjust the speed if necessary
+
+        // Determine new position based on direction
         switch (direction) {
-            case UP:    newY++; break;
-            case DOWN:  newY--; break;
-            case LEFT:  newX--; break;
-            case RIGHT: newX++; break;
-            default:    return; // Do nothing for other keys
+            case UP:    newY += speed; break;
+            case DOWN:  newY -= speed; break;
+            case LEFT:  newX -= speed; break;
+            case RIGHT: newX += speed; break;
+            default:    return; // Invalid direction
         }
-        if (maze.isValidMove(newX, newY)) {
-            x = newX;
-            y = newY;
-            Gdx.app.log("Character", "Moved to (" + newX + ", " + newY + ")");
-        } else {
-            Gdx.app.log("Character", "Invalid move to (" + newX + ", " + newY + ")");
+        // Update the current direction
+        this.currentDirection = direction;
+
+        // Create a temporary bounding box for the intended position
+        Rectangle tempBounds = new Rectangle(bounds);
+        tempBounds.setPosition(newX, newY);
+
+        // Check collision
+        int collisionType = maze.checkCollision(tempBounds, newX, newY, hasKey);
+        handleCollision(collisionType, newX, newY);
+    }
+
+    /**
+     * Handles collision based on the type of element collided with.
+     *
+     * @param collisionType The type of element collided with.
+     * @param newX          The new X position.
+     * @param newY          The new Y position.
+     */
+    private void handleCollision(int collisionType, float newX, float newY) {
+        switch (collisionType) {
+            case 0: // Wall
+            case 2: // Exit without key
+                // Movement is blocked
+                break;
+            case 3:
+
+                loseLife();
+                setPosition(newX, newY);
+                camera.position.set(bounds.x, bounds.y, camera.position.z);
+                break;// Trap
+            case 4: // Enemy
+                loseLife();
+                // Additional logic for bounce-back effect
+                break;
+            case 5: // Key
+                hasKey = true;
+                // Fall through to default case to allow movement
+            default:
+                // Move the character and update camera
+                setPosition(newX, newY);
+                camera.position.set(bounds.x, bounds.y, camera.position.z);
+                break;
         }
     }
+
+    /**
+     * Updates the character's position and bounding box.
+     *
+     * @param newX The new X-coordinate of the character.
+     * @param newY The new Y-coordinate of the character.
+     */
+    public void setPosition(float newX, float newY) {
+        this.x = newX;
+        this.y = newY;
+        this.bounds.setPosition(newX, newY);
+    }
+
+
+
+
+
+
+
     /**
      * Updates the state of the character.
      *
@@ -72,19 +141,23 @@ public class Character extends MazeElement implements Movable {
      * Draws the character at its current position.
      *
      * @param batch The SpriteBatch used for drawing.
-     * @param cam The camera for coordinate adjustment.
+     *
      */
     @Override
-    public void draw(SpriteBatch batch, OrthographicCamera cam) {
+    public void draw(SpriteBatch batch) {
         TextureRegion currentFrame;
+
         if (currentDirection != null) {
-            currentFrame = animations[currentDirection.ordinal()].getKeyFrame(stateTime, true);
+            // Use the animation corresponding to the current direction
+            currentFrame = animations[currentDirection.ordinal()].getKeyFrame(stateTime/3, true);
         } else {
-            // Draw the first frame of the down animation when the game starts
-            currentFrame = animations[Direction.DOWN.ordinal()].getKeyFrame(0, true);
+            // When not moving, show the first frame of the down animation
+            currentFrame = animations[Direction.RIGHT.ordinal()].getKeyFrame(0, false);
         }
-        batch.draw(currentFrame, x + cam.position.x, y + cam.position.y);
+
+        batch.draw(currentFrame, x, y, CHAR_WIDTH, CHAR_HEIGHT);
     }
+
 
 
     /**
@@ -93,7 +166,7 @@ public class Character extends MazeElement implements Movable {
      * @param maze The maze containing the elements.
      */
     public void updateStatus(Maze maze) {
-        int elementType = maze.getElementAt(x, y);
+        int elementType = maze.getElementAt((int)x,(int) y);
         switch (elementType) {
             case 3: // Trap
                 loseLife();

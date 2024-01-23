@@ -8,7 +8,7 @@ public class Trap extends MazeElement {
     private float stateTime;
 
     public Trap(Animation<TextureRegion> animation, int x, int y) {
-        super(animation.getKeyFrame(0), x, y);
+        super(animation.getKeyFrame(0), x, y,16,16);
         this.animation = animation;
         stateTime = 0f; // Initialize stateTime
     }

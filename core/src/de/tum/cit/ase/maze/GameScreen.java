@@ -44,7 +44,7 @@ public class GameScreen implements Screen {
         // Create and configure the camera for the game view
         camera = new OrthographicCamera();
         camera.setToOrtho(false);
-        camera.zoom = 0.75f;
+        camera.zoom = 0.35f;
 
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
@@ -97,7 +97,7 @@ public class GameScreen implements Screen {
                     game.getCharacterRightAnimation(),
                     game.getCharacterUpAnimation()
             };
-            playerCharacter = new Character(animations, entryPoint.getX(), entryPoint.getY(), initialLives);
+            playerCharacter = new Character(animations, entryPoint.getX(), entryPoint.getY(), initialLives,camera);
             Gdx.app.log("GameScreen", "Character initialized at (" + entryPoint.getX() + ", " + entryPoint.getY() + ")");
         }else {
             Gdx.app.error("GameScreen", "Entry point not found, character not initialized");
@@ -170,13 +170,13 @@ public class GameScreen implements Screen {
         camera.update();
       // Handle input for character movement
       if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-          playerCharacter.move(Direction.LEFT, game.getMaze());
-      } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-          playerCharacter.move(Direction.RIGHT, game.getMaze());
-      } else if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-          playerCharacter.move(Direction.UP, game.getMaze());
-      } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-          playerCharacter.move(Direction.DOWN, game.getMaze());
+          playerCharacter.move(Direction.LEFT, game.getMaze(), delta);
+      } if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+          playerCharacter.move(Direction.RIGHT, game.getMaze(),delta);
+      }  if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+          playerCharacter.move(Direction.UP, game.getMaze(),delta);
+      }  if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+          playerCharacter.move(Direction.DOWN, game.getMaze(),delta);
       }
       playerCharacter.update(Gdx.graphics.getDeltaTime());
         /*// Move text in a circular path to have an example of a moving object
@@ -209,35 +209,35 @@ public class GameScreen implements Screen {
             // Draw the floor for every element
             game.getSpriteBatch().draw(
                     MazeRunnerGame.getFloorTextureRegion(),
-                    element.getX() + camera.position.x,
-                    element.getY() + camera.position.y
+                    element.getX() ,
+                    element.getY()
             );
 
             if (element instanceof Trap) {
                 Trap trap = (Trap) element;
                 trap.update(Gdx.graphics.getDeltaTime());
-                trap.draw(game.getSpriteBatch(), camera);
+                trap.draw(game.getSpriteBatch());
             } else if (element instanceof Wall || element instanceof Exit ) {
                 // For Walls and Exits, render them normally without floor below
-                element.draw(game.getSpriteBatch(), camera);
+                element.draw(game.getSpriteBatch());
             } else if (element instanceof Enemy) {
                 // If there are special considerations for enemies, handle them here
                 Enemy enemy = (Enemy) element;
-                enemy.draw(game.getSpriteBatch(), camera);
+                enemy.draw(game.getSpriteBatch());
             } else if (element instanceof Lava) {
                 Lava lava = (Lava) element;
                 lava.update(delta); // Update the lava animation
-                lava.draw(game.getSpriteBatch(), camera);
+                lava.draw(game.getSpriteBatch());
 
             } else
             {
                 // For other elements, render them on top of the floor
-                element.draw(game.getSpriteBatch(), camera);
+                element.draw(game.getSpriteBatch());
             }
         }
         if (playerCharacter != null) {
             playerCharacter.update(Gdx.graphics.getDeltaTime());
-            playerCharacter.draw(game.getSpriteBatch(), camera);
+            playerCharacter.draw(game.getSpriteBatch());
             Gdx.app.log("GameScreen", "Character drawn at (" + playerCharacter.getX() + ", " + playerCharacter.getY() + ")");
         } else {
             Gdx.app.error("GameScreen", "Character is null, not drawn");

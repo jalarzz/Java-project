@@ -53,6 +53,7 @@ public class MenuScreen implements Screen {
                 game.goToGame(); // Change to the game screen when button is pressed
             }
         });
+        //Select map
         TextButton SelectMap = new TextButton("Select map", game.getSkin());
         table.add(SelectMap).width(300).row();
         SelectMap.addListener(new ChangeListener(){

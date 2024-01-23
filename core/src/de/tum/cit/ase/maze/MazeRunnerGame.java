@@ -63,11 +63,12 @@ public class MazeRunnerGame extends Game {
     // Character animation right
     private Animation<TextureRegion> characterRightAnimation;
 
+
+
+    private final NativeFileChooser fileChooser;
     public NativeFileChooser getFileChooser() {
         return fileChooser;
     }
-
-    private final NativeFileChooser fileChooser;
 
     /**
      * Constructor for MazeRunnerGame.
@@ -107,9 +108,9 @@ public class MazeRunnerGame extends Game {
 
         // Play some background music
         // Background sound
-        Music backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3"));
-        backgroundMusic.setLooping(true);
-        backgroundMusic.play();
+      //  Music backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3"));
+       // backgroundMusic.setLooping(true);
+       // backgroundMusic.play();
         loadTextures();
 
         goToMenu(); // Navigate to the menu screen
@@ -187,9 +188,9 @@ public class MazeRunnerGame extends Game {
 
         // Create animations for each direction
         characterDownAnimation = createAnimation(walkSheet, 0, frameWidth, frameHeight, animationFrames);
-        characterLeftAnimation = createAnimation(walkSheet, 1, frameWidth, frameHeight, animationFrames);
-        characterRightAnimation = createAnimation(walkSheet, 2, frameWidth, frameHeight, animationFrames);
-        characterUpAnimation = createAnimation(walkSheet, 3, frameWidth, frameHeight, animationFrames);
+        characterLeftAnimation = createAnimation(walkSheet, 3, frameWidth, frameHeight, animationFrames);
+        characterRightAnimation = createAnimation(walkSheet, 1, frameWidth, frameHeight, animationFrames);
+        characterUpAnimation = createAnimation(walkSheet, 2, frameWidth, frameHeight, animationFrames);
     }
     private void loadTextures() {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
