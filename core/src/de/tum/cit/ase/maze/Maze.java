@@ -101,86 +101,45 @@ public class Maze {
         return layout;
     }
 
-    /**
-     * Checks if the maze is valid and properly loaded.
-     *
-     * @return True if the maze is valid, false otherwise.
-     */
-    public boolean isValidMaze() {
-        return isValidMaze;
-    }
-
-    /**
-     * Checks if a move to the specified coordinates is valid.
-     *
-     * @param x The x-coordinate.
-     * @param y The y-coordinate.
-     * @return True if the move is valid, false otherwise.
-     */
-    /*public boolean isValidMove(int x, int y) {
-        // Check bounds
-        if (x < 0 || y < 0 || x >= layout.length * 16 || y >= layout[0].length * 16) {
-            return false;
-        }
-        // Check if the location is not a wall (wall is typically represented by 0)
-        return layout[(int)x/16][(int)y/16] != 0;
-    }*/
-
-    /**
-     * Checks if a move to the specified float coordinates is valid.
-     * Now also checks for interaction with other elements using float values.
-     *
-     * @param x The x-coordinate (float).
-     * @param y The y-coordinate (float).
-     * @return A code indicating the type of interaction, or -1 for a valid move.
-     */
-    /*public int checkMove(float x, float y) {
-        // Convert float to grid coordinates
-        int gridX = (int)(x / 16);
-        int gridY = (int)(y / 16);
-
-        // Check bounds
-        if (gridX < 0 || gridY < 0 || gridX >= layout.length || gridY >= layout[0].length) {
-            return 0; // Indicate a wall collision
-        }
-
-        return layout[gridX][gridY]; // Return the tile type
-    }*/
 
     /**
      * Checks for collisions between the character and specific tiles in the maze based on the character's intended movement.
      * It uses the character's bounding box and checks if it overlaps with tiles that represent walls, doors, traps, enemies, etc.
      *
      * @param characterBounds The bounding box of the character after movement.
-     * @param newX The x-coordinate the character is trying to move to.
-     * @param newY The y-coordinate the character is trying to move to.
      * @param hasKey A boolean indicating if the character has a key (for locked doors).
      * @return The type of element the character collides with, or -1 if there is no collision.
      */
-    public int checkCollision(Rectangle characterBounds, float newX, float newY, boolean hasKey) {
-        int gridX = (int)(newX / TILE_SIZE);
-        int gridY = (int)(newY / TILE_SIZE);
+    public int checkCollision(Rectangle characterBounds, boolean hasKey) {
+        // Check each corner of the character's bounding box
+        for (float checkX = characterBounds.x; checkX <= characterBounds.x + characterBounds.width; checkX += characterBounds.width) {
+            for (float checkY = characterBounds.y; checkY <= characterBounds.y + characterBounds.height; checkY += characterBounds.height) {
+                int gridX = (int) (checkX / TILE_SIZE);
+                int gridY = (int) (checkY / TILE_SIZE);
 
-        if (gridX < 0 || gridY < 0 || gridX >= layout.length || gridY >= layout[0].length) {
-            return 0; // Out of bounds
+                if (gridX < 0 || gridY < 0 || gridX >= layout.length || gridY >= layout[0].length) {
+                    return 0;
+                }
+
+                int tileType = layout[gridX][gridY];
+                switch (tileType) {
+                    case 0: // Wall
+                        return 0;
+                    case 2: // Exit
+                        if (!hasKey) return 2; // Collision with locked door if no key
+                        break;
+                    case 3: // Trap
+                        return 3;
+                    case 4: // Enemy
+                        return 4;
+                    case 5: // Key
+                        return 5;
+                    // Add additional cases as needed
+                }
+            }
         }
 
-        int tileType = layout[gridX][gridY];
-        switch (tileType) {
-            case 0: // Wall
-                return 0;
-            case 2: // Exit
-                return hasKey ? -1 : 2; // If character has a key, no collision; otherwise, collision with locked door
-            case 3: // Trap
-                return 3;
-            case 4: // Enemy
-                return 4;
-            case 5: // Key
-                return 5;
-            // Add additional cases as needed for other tile types
-        }
-
-        return -1; // No collision with any special element
+        return -1; // No collision detected
     }
 
 

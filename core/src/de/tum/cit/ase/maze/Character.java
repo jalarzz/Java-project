@@ -41,6 +41,7 @@ public class Character extends MazeElement implements Movable {
         this.stateTime = 0f;
         this.currentDirection = null; // Default direction
         this.camera = camera;
+        this.bounds = new Rectangle(x+2,y+2,8,4);
     }
 
     /**
@@ -72,7 +73,7 @@ public class Character extends MazeElement implements Movable {
         tempBounds.setPosition(newX, newY);
 
         // Check collision
-        int collisionType = maze.checkCollision(tempBounds, newX, newY, hasKey);
+        int collisionType = maze.checkCollision(tempBounds, hasKey);
         handleCollision(collisionType, newX, newY);
     }
 
@@ -89,12 +90,12 @@ public class Character extends MazeElement implements Movable {
             case 2: // Exit without key
                 // Movement is blocked
                 break;
-            case 3:
+            case 3: // Trap
 
                 loseLife();
                 setPosition(newX, newY);
                 camera.position.set(bounds.x, bounds.y, camera.position.z);
-                break;// Trap
+                break;
             case 4: // Enemy
                 loseLife();
                 // Additional logic for bounce-back effect
@@ -155,7 +156,7 @@ public class Character extends MazeElement implements Movable {
             currentFrame = animations[Direction.RIGHT.ordinal()].getKeyFrame(0, false);
         }
 
-        batch.draw(currentFrame, x, y, CHAR_WIDTH, CHAR_HEIGHT);
+        batch.draw(currentFrame, x-4, y-4, CHAR_WIDTH, CHAR_HEIGHT);
     }
 
 
