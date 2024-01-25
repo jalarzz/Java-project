@@ -115,6 +115,9 @@ public class MazeRunnerGame extends Game {
 
         goToMenu(); // Navigate to the menu screen
     }
+    public void showGameOverScreen() {
+        setScreen(new GameOverScreen(this));
+    }
 
     /**
      * Switches to the menu screen.

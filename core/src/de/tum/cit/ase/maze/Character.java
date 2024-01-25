@@ -21,6 +21,8 @@ public class Character extends MazeElement implements Movable {
     private static final int TILE_SIZE = 16; // each tile is 16x16
     private static final int CHAR_WIDTH = 16; // Character width
     private static final int CHAR_HEIGHT = 32; // Character height
+    private static final float INVULNERABILITY_TIME = 3.0f; // 2 seconds of invulnerability
+    private float invulnerabilityTimer = 0;
 
 
 
@@ -136,6 +138,9 @@ public class Character extends MazeElement implements Movable {
      */
     public void update(float delta) {
         stateTime += delta;
+        if (invulnerabilityTimer > 0) {
+            invulnerabilityTimer -= delta;
+        }
     }
 
     /**
@@ -186,11 +191,14 @@ public class Character extends MazeElement implements Movable {
      * Decreases the character's lives by one.
      */
     private void loseLife() {
-        lives--;
-        if (lives <= 0) {
-            // Handle character's death, like restarting the level or ending the game
+            if (invulnerabilityTimer <= 0) {
+                lives--;
+                invulnerabilityTimer = INVULNERABILITY_TIME;
+                if (lives <= 0) {
+
+                }
+            }
         }
-    }
 
     // Getters and setters
 

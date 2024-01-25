@@ -245,6 +245,10 @@ public class GameScreen implements Screen {
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything
       hud.updateHearts(playerCharacter.getLives(), game.getFullHeartTexture(), game.getEmptyHeartTexture());
+      if (playerCharacter.getLives() <= 0) {
+          game.showGameOverScreen();
+      }
+
       hud.updateKey(playerCharacter.hasKey());
       hud.draw();
     }
