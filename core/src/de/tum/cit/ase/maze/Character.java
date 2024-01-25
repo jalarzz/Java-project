@@ -1,6 +1,8 @@
 package de.tum.cit.ase.maze;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -23,6 +25,7 @@ public class Character extends MazeElement implements Movable {
     private static final int CHAR_HEIGHT = 32; // Character height
     private static final float INVULNERABILITY_TIME = 3.0f; // 2 seconds of invulnerability
     private float invulnerabilityTimer = 0;
+    private Sound loseLife;
 
 
 
@@ -44,6 +47,7 @@ public class Character extends MazeElement implements Movable {
         this.currentDirection = null; // Default direction
         this.camera = camera;
         this.bounds = new Rectangle(x+2,y+2,8,4);
+        this.loseLife = Gdx.audio.newSound(Gdx.files.internal("Realistic_Punch-Mark_DiAngelo-1609462330.mp3"));
     }
 
     /**
@@ -104,6 +108,7 @@ public class Character extends MazeElement implements Movable {
                 break;
             case 5: // Key
                 hasKey = true;
+
                 // Fall through to default case to allow movement
             default:
                 // Move the character and update camera
@@ -193,11 +198,15 @@ public class Character extends MazeElement implements Movable {
     private void loseLife() {
             if (invulnerabilityTimer <= 0) {
                 lives--;
+                loseLife.play();
                 invulnerabilityTimer = INVULNERABILITY_TIME;
                 if (lives <= 0) {
 
                 }
             }
+
+
+
         }
 
     // Getters and setters

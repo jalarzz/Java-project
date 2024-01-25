@@ -50,6 +50,11 @@ public class MazeRunnerGame extends Game {
     private TextureRegion keyTexture;
     private TextureRegion noKeyTexture;
 
+
+    private Music backgroundMusic;
+    private Music gameOverMusic;
+    private Music gameMusic;
+
     public Maze getMaze() {
         return maze;
     }
@@ -108,14 +113,26 @@ public class MazeRunnerGame extends Game {
 
         // Play some background music
         // Background sound
-      //  Music backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3"));
-       // backgroundMusic.setLooping(true);
-       // backgroundMusic.play();
+       backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3"));
+       backgroundMusic.setLooping(true);
+       backgroundMusic.play();
         loadTextures();
-
+        gameOverMusic = Gdx.audio.newMusic(Gdx.files.internal("No Hope.mp3"));
+        gameMusic = Gdx.audio.newMusic(Gdx.files.internal("Bob&#039;s Adventures - back34.mp3"));
         goToMenu(); // Navigate to the menu screen
     }
     public void showGameOverScreen() {
+        if (gameMusic.isPlaying()) {
+            gameMusic.stop();
+        }
+        else if (backgroundMusic.isPlaying()) {
+            backgroundMusic.stop();
+        }
+        else if (gameOverMusic.isPlaying()) {
+            gameOverMusic.stop();
+        }
+        gameOverMusic.play();
+        gameOverMusic.setLooping(true);
         setScreen(new GameOverScreen(this));
     }
 
@@ -123,6 +140,12 @@ public class MazeRunnerGame extends Game {
      * Switches to the menu screen.
      */
     public void goToMenu() {
+        if (gameOverMusic.isPlaying()){ gameOverMusic.stop();}
+        else if (gameMusic.isPlaying()) {
+            gameMusic.stop();
+        }
+        backgroundMusic.play();
+        backgroundMusic.setLooping(true);
         this.setScreen(new MenuScreen(this)); // Set the current screen to MenuScreen
         if (gameScreen != null) {
             gameScreen.dispose(); // Dispose the game screen if it exists
@@ -134,6 +157,16 @@ public class MazeRunnerGame extends Game {
      * Switches to the game screen.
      */
     public void goToGame() {
+        if (backgroundMusic.isPlaying()) {
+            backgroundMusic.stop();}
+        else if (gameOverMusic.isPlaying()) {
+            gameOverMusic.stop();
+        } gameMusic.play();
+        {
+
+        }
+        gameMusic.setLooping(true);
+
         this.setScreen(new GameScreen(this)); // Set the current screen to GameScreen
         if (menuScreen != null) {
             menuScreen.dispose(); // Dispose the menu screen if it exists
@@ -198,10 +231,12 @@ public class MazeRunnerGame extends Game {
     private void loadTextures() {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         Texture spriteSheet = new Texture(Gdx.files.internal("objects.png")); // Adjust path and coordinates
+        Texture noKeytexture = new Texture(Gdx.files.internal("key-white.png"));
+        Texture keytexture = new Texture(Gdx.files.internal("key-blue.png"));
         fullHeartTexture = new TextureRegion(spriteSheet, 64, 0,16, 16);
         emptyHeartTexture = new TextureRegion(spriteSheet, 128, 0,16,16);
-        keyTexture = new TextureRegion(spriteSheet,136,50, 16, 16);
-        noKeyTexture = new TextureRegion(spriteSheet,126,59, 16, 16);
+        keyTexture = new TextureRegion(keytexture,0,0, 32, 32);
+        noKeyTexture = new TextureRegion(noKeytexture,0,0, 32, 32);
     }
     /**
      * Creates an animation from a specific row of a sprite sheet.
@@ -265,6 +300,8 @@ public class MazeRunnerGame extends Game {
         spriteBatch.dispose(); // Dispose the spriteBatch
         skin.dispose(); // Dispose the skin
         mazeElementsTexture.dispose(); // Dispose the texture
+
+
     }
 
     // Getter methods

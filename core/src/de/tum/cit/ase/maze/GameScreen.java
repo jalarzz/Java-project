@@ -48,6 +48,8 @@ public class GameScreen implements Screen {
 
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
+
+        // Get the textures for the HUD
         TextureRegion fullHeart = game.getFullHeartTexture();
         TextureRegion emptyHeart = game.getEmptyHeartTexture();
         TextureRegion keyTexture = game.getKeyTexture();
