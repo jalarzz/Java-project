@@ -224,10 +224,10 @@ public class GameScreen implements Screen {
             } else if (element instanceof Wall || element instanceof Exit ) {
                 // For Walls and Exits, render them normally without floor below
                 element.draw(game.getSpriteBatch());
-//            } else if (element instanceof Enemy) {
-//                Enemy enemy = (Enemy) element;
-//                enemy.update(delta); // Update the enemy
-//                enemy.draw(game.getSpriteBatch()); // Draw the enemy
+            } else if (element instanceof Enemy) {
+                Enemy enemy = (Enemy) element;
+                enemy.update(delta); // Update the enemy
+                enemy.draw(game.getSpriteBatch()); // Draw the enemy
             } else if (element instanceof Lava) {
                 Lava lava = (Lava) element;
                 lava.update(delta); // Update the lava animation
@@ -244,13 +244,6 @@ public class GameScreen implements Screen {
                 element.draw(game.getSpriteBatch());
             }
         }
-            for (MazeElement element : mazeElements) {
-                if (element instanceof Enemy) {
-                    Enemy enemy = (Enemy) element;
-                    enemy.update(delta); // Update the enemy
-                    enemy.draw(game.getSpriteBatch()); // Draw the enemy
-                }
-            }
 
         if (playerCharacter != null) {
             playerCharacter.update(Gdx.graphics.getDeltaTime());
