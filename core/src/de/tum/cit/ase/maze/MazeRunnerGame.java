@@ -22,6 +22,7 @@ public class MazeRunnerGame extends Game {
     private MenuScreen menuScreen;
     private GameScreen gameScreen;
 
+
     // Sprite Batch for rendering
     private SpriteBatch spriteBatch;
 
@@ -42,6 +43,7 @@ public class MazeRunnerGame extends Game {
     private Texture mazeElementsTexture;
     private Texture obstaclesTexture;
     private Texture mobsTexture;
+
     //Maze
     private Maze maze;
 
@@ -54,6 +56,7 @@ public class MazeRunnerGame extends Game {
     private Music backgroundMusic;
     private Music gameOverMusic;
     private Music gameMusic;
+    private Music victoryMusic;
 
     public Maze getMaze() {
         return maze;
@@ -106,8 +109,10 @@ public class MazeRunnerGame extends Game {
         exitTextureRegion = new TextureRegion(mazeElementsTexture, 0, 96, 16, 16);
         //trapTextureRegion = new TextureRegion(obstaclesTexture, 96, 42, 22, 22);
         enemyTextureRegion = new TextureRegion(mobsTexture, 144, 0, 16, 16);
-        keyTextureRegion = new TextureRegion(mazeElementsTexture, 64, 64, 16, 16);
+        //keyTextureRegion = new TextureRegion(mazeElementsTexture, 64, 64, 16, 16);
         floorTextureRegion = new TextureRegion(mazeElementsTexture, 0, 16, 16, 16);
+
+
 
 
 
@@ -119,6 +124,7 @@ public class MazeRunnerGame extends Game {
         loadTextures();
         gameOverMusic = Gdx.audio.newMusic(Gdx.files.internal("No Hope.mp3"));
         gameMusic = Gdx.audio.newMusic(Gdx.files.internal("Bob&#039;s Adventures - back34.mp3"));
+        victoryMusic = Gdx.audio.newMusic(Gdx.files.internal("Riverside Ride.mp3"));
         goToMenu(); // Navigate to the menu screen
     }
     public void showGameOverScreen() {
@@ -130,10 +136,27 @@ public class MazeRunnerGame extends Game {
         }
         else if (gameOverMusic.isPlaying()) {
             gameOverMusic.stop();
+        } else if (victoryMusic.isPlaying()) {
+            gameOverMusic.stop();
         }
         gameOverMusic.play();
         gameOverMusic.setLooping(true);
         setScreen(new GameOverScreen(this));
+    }
+    public void showVictoryScreen() {
+        if (gameMusic.isPlaying()) {
+            gameMusic.stop();
+        }
+        else if (backgroundMusic.isPlaying()) {
+            backgroundMusic.stop();
+        }
+        else if (gameOverMusic.isPlaying()) {
+            gameOverMusic.stop();
+        }
+        victoryMusic.play();
+        victoryMusic.setLooping(true);
+        setScreen(new VictoryScreen(this));
+
     }
 
     /**
@@ -143,10 +166,13 @@ public class MazeRunnerGame extends Game {
         if (gameOverMusic.isPlaying()){ gameOverMusic.stop();}
         else if (gameMusic.isPlaying()) {
             gameMusic.stop();
+        }else if (victoryMusic.isPlaying()) {
+            victoryMusic.stop();
         }
         backgroundMusic.play();
         backgroundMusic.setLooping(true);
-        this.setScreen(new MenuScreen(this)); // Set the current screen to MenuScreen
+        this.setScreen(new MenuScreen(this));// Set the current screen to MenuScreen
+        ;
         if (gameScreen != null) {
             gameScreen.dispose(); // Dispose the game screen if it exists
             gameScreen = null;
@@ -161,10 +187,9 @@ public class MazeRunnerGame extends Game {
             backgroundMusic.stop();}
         else if (gameOverMusic.isPlaying()) {
             gameOverMusic.stop();
-        } gameMusic.play();
-        {
-
-        }
+        } else if (victoryMusic.isPlaying()) {
+            gameOverMusic.stop();
+        }gameMusic.play();
         gameMusic.setLooping(true);
 
         this.setScreen(new GameScreen(this)); // Set the current screen to GameScreen
@@ -270,6 +295,28 @@ public class MazeRunnerGame extends Game {
         }
 
         return new Animation<>(0.1f, trapFrames); // Adjust the frame duration as needed
+    }
+    protected Animation<TextureRegion> loadKeyAnimation() {
+        Texture keySheet = new Texture(Gdx.files.internal("objects.png")); // Make sure this path is correct
+
+        int frameWidth = 16; // Make sure these dimensions match your sprite sheet
+        int frameHeight = 16;
+        int animationFrames = 4; // Ensure you have 9 frames in the sprite sheet
+        int startCol = 0; // Starting column for trap animation frames (adjust as needed)
+        int startRow = 4; // Starting row for trap animation frames (adjust as needed)
+
+        Array<TextureRegion> keyFrames = new Array<>(TextureRegion.class);
+
+        for (int col = 0; col < animationFrames; col++) {
+            // Calculate the x and y position for each frame in the sprite sheet
+            int x = (startCol + col) * frameWidth;
+            int y = startRow * frameHeight;
+
+            keyFrames.add(new TextureRegion(keySheet, x, y, frameWidth, frameHeight));
+        }
+
+
+        return new Animation<>(0.1f, keyFrames); // Adjust the frame duration as needed
     }
     protected Animation<TextureRegion> loadLavaAnimation() {
         Texture lavaSheet = new Texture(Gdx.files.internal("lava.png")); // Adjust the file name as needed

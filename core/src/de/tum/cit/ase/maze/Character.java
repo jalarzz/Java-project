@@ -16,6 +16,7 @@ import com.badlogic.gdx.math.Rectangle;
 public class Character extends MazeElement implements Movable {
     private int lives;
     private boolean hasKey;
+    private boolean reachedExit;
     private Animation<TextureRegion>[] animations;
     private float stateTime;
     private Direction currentDirection;
@@ -26,6 +27,8 @@ public class Character extends MazeElement implements Movable {
     private static final float INVULNERABILITY_TIME = 3.0f; // 2 seconds of invulnerability
     private float invulnerabilityTimer = 0;
     private Sound loseLife;
+    private Maze maze;
+
 
 
 
@@ -48,6 +51,7 @@ public class Character extends MazeElement implements Movable {
         this.camera = camera;
         this.bounds = new Rectangle(x+2,y+2,8,4);
         this.loseLife = Gdx.audio.newSound(Gdx.files.internal("Realistic_Punch-Mark_DiAngelo-1609462330.mp3"));
+
     }
 
     /**
@@ -107,7 +111,9 @@ public class Character extends MazeElement implements Movable {
                 // Additional logic for bounce-back effect
                 break;
             case 5: // Key
-                hasKey = true;
+                setHasKey(true);
+
+
 
                 // Fall through to default case to allow movement
             default:
@@ -179,6 +185,8 @@ public class Character extends MazeElement implements Movable {
     public void updateStatus(Maze maze) {
         int elementType = maze.getElementAt((int)x,(int) y);
         switch (elementType) {
+            case 2: // Exit
+                break;
             case 3: // Trap
                 loseLife();
                 break;
@@ -196,18 +204,18 @@ public class Character extends MazeElement implements Movable {
      * Decreases the character's lives by one.
      */
     private void loseLife() {
-            if (invulnerabilityTimer <= 0) {
-                lives--;
-                loseLife.play();
-                invulnerabilityTimer = INVULNERABILITY_TIME;
-                if (lives <= 0) {
+        if (invulnerabilityTimer <= 0) {
+            lives--;
+            loseLife.play();
+            invulnerabilityTimer = INVULNERABILITY_TIME;
+            if (lives <= 0) {
 
-                }
             }
-
-
-
         }
+
+
+
+    }
 
     // Getters and setters
 
@@ -226,4 +234,13 @@ public class Character extends MazeElement implements Movable {
     public void setHasKey(boolean hasKey) {
         this.hasKey = hasKey;
     }
+
+    public boolean hasReachedExit() {
+        return reachedExit;
+    }
+
+    public void setReachedExit(boolean reachedExit) {
+        this.reachedExit = reachedExit;
+    }
+
 }

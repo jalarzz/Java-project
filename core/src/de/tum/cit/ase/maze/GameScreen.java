@@ -19,6 +19,9 @@ public class GameScreen implements Screen {
     private final MazeRunnerGame game;
     private final OrthographicCamera camera;
     private final BitmapFont font;
+    private Maze maze;
+
+
 
     private float sinusInput = 0f;
 
@@ -36,6 +39,7 @@ public class GameScreen implements Screen {
      */
     public GameScreen(MazeRunnerGame game) {
         this.game = game;
+        this.maze = game.getMaze();
 
         this.mazeElements = new Array<>();
 
@@ -56,7 +60,7 @@ public class GameScreen implements Screen {
         TextureRegion noKeyTexture = game.getNoKeyTexture();
 
         // Initialize HUD
-        hud = new HUD(fullHeart, emptyHeart, keyTexture, noKeyTexture, 5);
+        hud = new HUD(fullHeart, emptyHeart, keyTexture, noKeyTexture, 5, 0);
 
         /**
          * todo:
@@ -146,7 +150,8 @@ public class GameScreen implements Screen {
                 return new Enemy(MazeRunnerGame.getEnemyTextureRegion(),x * tileSize, y * tileSize);
 
             case 5: // Key
-                return new Key(MazeRunnerGame.getKeyTextureRegion(),x * tileSize, y * tileSize);
+                Animation<TextureRegion> keyAnimation = game.loadKeyAnimation();
+                return new Key(keyAnimation, x * tileSize, y * tileSize);
             case 6: // Lava
                 Animation<TextureRegion> lavaAnimation = game.loadLavaAnimation();
                 return new Lava(lavaAnimation, x * tileSize, y * tileSize);
@@ -158,7 +163,7 @@ public class GameScreen implements Screen {
 
 
     // Screen interface methods with necessary functionality
-  @Override
+    @Override
     public void render(float delta) {
         // Check for escape key press to go back to the menu
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
@@ -170,17 +175,17 @@ public class GameScreen implements Screen {
         // Update camera to center on the character
         camera.position.set(playerCharacter.getX(), playerCharacter.getY(), 0);
         camera.update();
-      // Handle input for character movement
-      if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-          playerCharacter.move(Direction.LEFT, game.getMaze(), delta);
-      } if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-          playerCharacter.move(Direction.RIGHT, game.getMaze(),delta);
-      }  if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-          playerCharacter.move(Direction.UP, game.getMaze(),delta);
-      }  if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-          playerCharacter.move(Direction.DOWN, game.getMaze(),delta);
-      }
-      playerCharacter.update(Gdx.graphics.getDeltaTime());
+        // Handle input for character movement
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            playerCharacter.move(Direction.LEFT, game.getMaze(), delta);
+        } if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            playerCharacter.move(Direction.RIGHT, game.getMaze(),delta);
+        }  if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            playerCharacter.move(Direction.UP, game.getMaze(),delta);
+        }  if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            playerCharacter.move(Direction.DOWN, game.getMaze(),delta);
+        }
+        playerCharacter.update(Gdx.graphics.getDeltaTime());
         /*// Move text in a circular path to have an example of a moving object
         sinusInput += delta;
         float textX = (float) (camera.position.x + Math.sin(sinusInput) * 100);
@@ -193,7 +198,7 @@ public class GameScreen implements Screen {
         game.getSpriteBatch().begin(); // Important to call this before drawing anything
 
         // Render the text
-       // font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY);
+        // font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY);
 
        /* // Draw the character next to the text :) / We can reuse sinusInput here
         game.getSpriteBatch().draw(
@@ -231,6 +236,10 @@ public class GameScreen implements Screen {
                 lava.update(delta); // Update the lava animation
                 lava.draw(game.getSpriteBatch());
 
+            } else if (element instanceof Key) {
+                Key key = (Key) element;
+                key.update(delta); // Update the key animation
+                key.draw(game.getSpriteBatch());
             } else
             {
                 // For other elements, render them on top of the floor
@@ -246,14 +255,22 @@ public class GameScreen implements Screen {
         }
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything
-      hud.updateHearts(playerCharacter.getLives(), game.getFullHeartTexture(), game.getEmptyHeartTexture());
-      if (playerCharacter.getLives() <= 0) {
-          game.showGameOverScreen();
-      }
+        hud.updateHearts(playerCharacter.getLives(), game.getFullHeartTexture(), game.getEmptyHeartTexture());
+        if (playerCharacter.getLives() <= 0) {
+            game.showGameOverScreen();
+        }
 
-      hud.updateKey(playerCharacter.hasKey());
-      hud.draw();
-    }
+        playerCharacter.updateStatus(game.getMaze());
+        hud.updateKey(playerCharacter.hasKey());
+        playerCharacter.updateStatus(game.getMaze());
+        hud.updateExit(playerCharacter.hasReachedExit());
+        playerCharacter.update(Gdx.graphics.getDeltaTime());
+        playerCharacter.updateStatus(game.getMaze()); // Update character status based on current position in the maze
+        // Check if player has reached the exit and has the key
+        if (playerCharacter.hasKey() && maze.checkCollision(playerCharacter.getBounds(), true) ==7 ) {
+            game.showVictoryScreen();
+        }
+        hud.draw();}
     @Override
     public void resize(int width, int height) {
         camera.setToOrtho(false);

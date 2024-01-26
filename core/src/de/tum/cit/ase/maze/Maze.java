@@ -1,4 +1,5 @@
 package de.tum.cit.ase.maze;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import java.io.IOException;
@@ -15,6 +16,8 @@ public class Maze {
     private static final float TILE_SIZE = 16;
     private int[][] layout;
     private boolean isValidMaze = false;
+    private Character character;
+    private MazeRunnerGame game;
 
     /**
      * Constructor for the Maze class.
@@ -126,8 +129,10 @@ public class Maze {
                     case 0: // Wall
                         return 0;
                     case 2: // Exit
-                        if (!hasKey) return 2; // Collision with locked door if no key
-                        break;
+                        if (!hasKey) return 2;
+                        if (hasKey) return 7;
+
+                        // Collision with locked door if no key
                     case 3: // Trap
                         return 3;
                     case 4: // Enemy
