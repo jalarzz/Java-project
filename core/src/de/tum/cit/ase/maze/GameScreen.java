@@ -238,8 +238,9 @@ public class GameScreen implements Screen {
 
             } else if (element instanceof Key) {
                 Key key = (Key) element;
+                if (!playerCharacter.hasKey()){
                 key.update(delta); // Update the key animation
-                key.draw(game.getSpriteBatch());
+                key.draw(game.getSpriteBatch());}
             } else
             {
                 // For other elements, render them on top of the floor
