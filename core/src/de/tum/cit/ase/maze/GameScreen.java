@@ -42,8 +42,8 @@ public class GameScreen implements Screen {
         this.maze = game.getMaze();
 
         this.mazeElements = new Array<>();
-
         this.loadMazeElements();
+
 
         // Create and configure the camera for the game view
         camera = new OrthographicCamera();
@@ -72,6 +72,9 @@ public class GameScreen implements Screen {
          */
         // Create the player character
         initializePlayerCharacter();
+
+
+
 
 
 
@@ -108,6 +111,11 @@ public class GameScreen implements Screen {
         }else {
             Gdx.app.error("GameScreen", "Entry point not found, character not initialized");
         }
+        for (MazeElement element : mazeElements) {
+            if (element instanceof Enemy) {
+                ((Enemy) element).setPlayer(playerCharacter);
+            }
+        }
     }
 
     /**
@@ -128,6 +136,14 @@ public class GameScreen implements Screen {
         // The x and y coordinates might need to be adjusted or scaled
         // depending on your game's coordinate system and tile size.
         final int tileSize = 16; // Example tile size, adjust as needed.
+        // Create an array of animations for the enemy
+        @SuppressWarnings("unchecked")
+        Animation<TextureRegion>[] enemyAnimations = new Animation[] {
+                game.getEnemyDownAnimation(),
+                game.getEnemyLeftAnimation(),
+                game.getEnemyRightAnimation(),
+                game.getEnemyUpAnimation()
+        };
 
         switch (type) {
             case -1: // Floor
@@ -147,7 +163,8 @@ public class GameScreen implements Screen {
                 return new Trap(trapAnimation, x * tileSize, y * tileSize);
 
             case 4: // Enemy (dynamic obstacle)
-                return new Enemy(MazeRunnerGame.getEnemyTextureRegion(),x * tileSize, y * tileSize);
+
+                return new Enemy(MazeRunnerGame.getEnemyTextureRegion(),x * tileSize, y * tileSize,playerCharacter,maze,enemyAnimations);
 
             case 5: // Key
                 Animation<TextureRegion> keyAnimation = game.loadKeyAnimation();
@@ -186,32 +203,12 @@ public class GameScreen implements Screen {
             playerCharacter.move(Direction.DOWN, game.getMaze(),delta);
         }
         playerCharacter.update(Gdx.graphics.getDeltaTime());
-        /*// Move text in a circular path to have an example of a moving object
-        sinusInput += delta;
-        float textX = (float) (camera.position.x + Math.sin(sinusInput) * 100);
-        float textY = (float) (camera.position.y + Math.cos(sinusInput) * 100);*/
 
-        // Set up and begin drawing with the sprite batch
         game.getSpriteBatch().setProjectionMatrix(camera.combined);
 
 
         game.getSpriteBatch().begin(); // Important to call this before drawing anything
 
-        // Render the text
-        // font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY);
-
-       /* // Draw the character next to the text :) / We can reuse sinusInput here
-        game.getSpriteBatch().draw(
-                game.getCharacterDownAnimation().getKeyFrame(sinusInput, true),
-                textX - 96,
-                textY - 64,
-                64,
-                128
-        );*/
-        // Render the maze elements
-       /* for (MazeElement element : mazeElements) {
-            element.draw(game.getSpriteBatch());
-        }*/
         for (MazeElement element : mazeElements) {
             // Draw the floor for every element
             game.getSpriteBatch().draw(
@@ -227,10 +224,10 @@ public class GameScreen implements Screen {
             } else if (element instanceof Wall || element instanceof Exit ) {
                 // For Walls and Exits, render them normally without floor below
                 element.draw(game.getSpriteBatch());
-            } else if (element instanceof Enemy) {
-                // If there are special considerations for enemies, handle them here
-                Enemy enemy = (Enemy) element;
-                enemy.draw(game.getSpriteBatch());
+//            } else if (element instanceof Enemy) {
+//                Enemy enemy = (Enemy) element;
+//                enemy.update(delta); // Update the enemy
+//                enemy.draw(game.getSpriteBatch()); // Draw the enemy
             } else if (element instanceof Lava) {
                 Lava lava = (Lava) element;
                 lava.update(delta); // Update the lava animation
@@ -247,10 +244,18 @@ public class GameScreen implements Screen {
                 element.draw(game.getSpriteBatch());
             }
         }
+            for (MazeElement element : mazeElements) {
+                if (element instanceof Enemy) {
+                    Enemy enemy = (Enemy) element;
+                    enemy.update(delta); // Update the enemy
+                    enemy.draw(game.getSpriteBatch()); // Draw the enemy
+                }
+            }
+
         if (playerCharacter != null) {
             playerCharacter.update(Gdx.graphics.getDeltaTime());
             playerCharacter.draw(game.getSpriteBatch());
-            Gdx.app.log("GameScreen", "Character drawn at (" + playerCharacter.getX() + ", " + playerCharacter.getY() + ")");
+            //Gdx.app.log("GameScreen", "Character drawn at (" + playerCharacter.getX() + ", " + playerCharacter.getY() + ")");
         } else {
             Gdx.app.error("GameScreen", "Character is null, not drawn");
         }
@@ -298,5 +303,4 @@ public class GameScreen implements Screen {
     public void dispose() {
     }
 
-    // Additional methods and logic can be added as needed for the game screen
 }

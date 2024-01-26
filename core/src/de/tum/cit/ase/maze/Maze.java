@@ -162,6 +162,20 @@ public class Maze {
         }
         return layout[x][y];
     }
+    /**
+     * Sets the type of element at the specified coordinates.
+     *
+     * @param x The x-coordinate.
+     * @param y The y-coordinate.
+     * @param elementType The type of element to set at the coordinates.
+     */
+    public void setElementAt(int x, int y, int elementType) {
+        // Check bounds to avoid ArrayIndexOutOfBoundsException
+        if (x >= 0 && y >= 0 && x < layout.length && y < layout[0].length) {
+            layout[x][y] = elementType;
+        }
+    }
+
 
 }
 

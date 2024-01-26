@@ -28,6 +28,7 @@ public class Character extends MazeElement implements Movable {
     private float invulnerabilityTimer = 0;
     private Sound loseLife;
     private Maze maze;
+    private boolean isArmed;
 
 
 
@@ -50,6 +51,7 @@ public class Character extends MazeElement implements Movable {
         this.currentDirection = null; // Default direction
         this.camera = camera;
         this.bounds = new Rectangle(x+2,y+2,8,4);
+        this.isArmed = false;
         this.loseLife = Gdx.audio.newSound(Gdx.files.internal("Realistic_Punch-Mark_DiAngelo-1609462330.mp3"));
 
     }
@@ -243,4 +245,42 @@ public class Character extends MazeElement implements Movable {
         this.reachedExit = reachedExit;
     }
 
+    public boolean isHasKey() {
+        return hasKey;
+    }
+
+    public boolean isReachedExit() {
+        return reachedExit;
+    }
+
+    public Animation<TextureRegion>[] getAnimations() {
+        return animations;
+    }
+
+    public float getStateTime() {
+        return stateTime;
+    }
+
+    public Direction getCurrentDirection() {
+        return currentDirection;
+    }
+
+    public OrthographicCamera getCamera() {
+        return camera;
+    }
+
+    public float getInvulnerabilityTimer() {
+        return invulnerabilityTimer;
+    }
+
+    public Sound getLoseLife() {
+        return loseLife;
+    }
+
+    public Maze getMaze() {
+        return maze;
+    }
+    public boolean isArmed() {
+        return isArmed;
+    }
 }

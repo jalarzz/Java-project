@@ -71,6 +71,16 @@ public class MazeRunnerGame extends Game {
     // Character animation right
     private Animation<TextureRegion> characterRightAnimation;
 
+    // Enemy animation downwards
+    private Animation<TextureRegion> enemyDownAnimation;
+    // Enemy animation upwards
+    private Animation<TextureRegion> enemyUpAnimation;
+    // Enemy animation left
+    private Animation<TextureRegion> enemyLeftAnimation;
+    // Enemy animation right
+    private Animation<TextureRegion> enemyRightAnimation;
+
+
 
 
     private final NativeFileChooser fileChooser;
@@ -96,11 +106,12 @@ public class MazeRunnerGame extends Game {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
         this.loadCharacterAnimations(); // Load character animations
+        this.loadEnemyAnimations(); // Load enemy animations
 
         // Load the sprite sheet
         mazeElementsTexture = new Texture(Gdx.files.internal("basictiles.png"));
         obstaclesTexture = new Texture(Gdx.files.internal("objects.png"));
-        mobsTexture = new Texture(Gdx.files.internal("mobs.png"));
+        mobsTexture = new Texture(Gdx.files.internal("mobs-sheet.salome.png"));//Enemy design by Salome Tsitskishvili
 
         // Initialize TextureRegions for each element
         // Adjust the coordinates (x, y) and dimensions (width, height) as per your sprite sheet layout
@@ -204,26 +215,7 @@ public class MazeRunnerGame extends Game {
     }
 
 
-    /**
-     * Loads the character animation from the character.png file.
-     */
-    /*private void loadCharacterAnimation() {
-        Texture walkSheet = new Texture(Gdx.files.internal("character.png"));
 
-        int frameWidth = 16;
-        int frameHeight = 32;
-        int animationFrames = 4;
-
-        // libGDX internal Array instead of ArrayList because of performance
-        Array<TextureRegion> walkFrames = new Array<>(TextureRegion.class);
-
-        // Add all frames to the animation
-        for (int col = 0; col < animationFrames; col++) {
-            walkFrames.add(new TextureRegion(walkSheet, col * frameWidth, 0, frameWidth, frameHeight));
-        }
-
-        characterDownAnimation = new Animation<>(0.1f, walkFrames);
-    }*/
 
     public Animation<TextureRegion> getCharacterUpAnimation() {
         return characterUpAnimation;
@@ -252,6 +244,22 @@ public class MazeRunnerGame extends Game {
         characterLeftAnimation = createAnimation(walkSheet, 3, frameWidth, frameHeight, animationFrames);
         characterRightAnimation = createAnimation(walkSheet, 1, frameWidth, frameHeight, animationFrames);
         characterUpAnimation = createAnimation(walkSheet, 2, frameWidth, frameHeight, animationFrames);
+    }
+    /**
+     * Loads the enemy animations from the mobs.png file.
+     */
+    private void loadEnemyAnimations() {
+        Texture walkSheet = new Texture(Gdx.files.internal("mobs-sheet.salome.png"));//Enemy design by Salome Tsitskishvili
+
+        int frameWidth = 16;
+        int frameHeight = 16;
+        int animationFrames = 3; // Number of frames per direction
+
+        // Create animations for each direction
+        enemyDownAnimation = createAnimation(walkSheet, 0, frameWidth, frameHeight, animationFrames);
+        enemyLeftAnimation = createAnimation(walkSheet, 3, frameWidth, frameHeight, animationFrames);
+        enemyRightAnimation = createAnimation(walkSheet, 1, frameWidth, frameHeight, animationFrames);
+        enemyUpAnimation = createAnimation(walkSheet, 2, frameWidth, frameHeight, animationFrames);
     }
     private void loadTextures() {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
@@ -337,6 +345,7 @@ public class MazeRunnerGame extends Game {
 
         return new Animation<>(0.1f, lavaFrames); // Adjust the frame duration as needed
     }
+
     /**
      * Cleans up resources when the game is disposed.
      */
@@ -388,5 +397,21 @@ public class MazeRunnerGame extends Game {
 
     public TextureRegion getNoKeyTexture() {
         return noKeyTexture;
+    }
+
+    public Animation<TextureRegion> getEnemyDownAnimation() {
+        return enemyDownAnimation;
+    }
+
+    public Animation<TextureRegion> getEnemyUpAnimation() {
+        return enemyUpAnimation;
+    }
+
+    public Animation<TextureRegion> getEnemyLeftAnimation() {
+        return enemyLeftAnimation;
+    }
+
+    public Animation<TextureRegion> getEnemyRightAnimation() {
+        return enemyRightAnimation;
     }
 }
