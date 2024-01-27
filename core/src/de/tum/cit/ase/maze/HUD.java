@@ -18,7 +18,8 @@ public class HUD {
     private final Image keyImage;
     private final TextureRegion keyTexture;
     private final TextureRegion noKeyTexture;
-    float scaling = 2.0f;
+    float heartScaling = 2.0f;
+    float keyScaling = 5f;
 
 
     public HUD(TextureRegion fullHeart, TextureRegion emptyHeart, TextureRegion keyTexture, TextureRegion noKeyTexture, int initialLives, float timer) {
@@ -38,15 +39,15 @@ public class HUD {
         hearts = new Image[initialLives];
         for (int i = 0; i < initialLives; i++) {
             hearts[i] = new Image(fullHeart);
-            hearts[i].setScale(scaling);// Set the size of the heart images
+            hearts[i].setScale(heartScaling);// Set the size of the heart images
             leftTable.add(hearts[i]).pad(25);
         }
 
         // Set up the right table for the key image
         rightTable.top().right();
         keyImage = new Image(noKeyTexture);
-        keyImage.setScale(scaling);// Set the size of the key image
-        rightTable.add(keyImage).pad(25);
+        keyImage.setScale(keyScaling);// Set the size of the key image
+        rightTable.add(keyImage).pad(50,0,0,50);
 
         // Add both tables to the stage
         stage.addActor(leftTable);

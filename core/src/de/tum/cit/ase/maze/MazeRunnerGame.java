@@ -265,12 +265,12 @@ public class MazeRunnerGame extends Game {
     private void loadTextures() {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         Texture spriteSheet = new Texture(Gdx.files.internal("objects.png")); // Adjust path and coordinates
-        Texture noKeytexture = new Texture(Gdx.files.internal("key-white.png"));
-        Texture keytexture = new Texture(Gdx.files.internal("key-blue.png"));
+        Texture noKeytexture = new Texture(Gdx.files.internal("objects.png"));
+        Texture keytexture = new Texture(Gdx.files.internal("objects.png"));
         fullHeartTexture = new TextureRegion(spriteSheet, 64, 0,16, 16);
         emptyHeartTexture = new TextureRegion(spriteSheet, 128, 0,16,16);
-        keyTexture = new TextureRegion(keytexture,0,0, 32, 32);
-        noKeyTexture = new TextureRegion(noKeytexture,0,0, 32, 32);
+        keyTexture = new TextureRegion(keytexture,0,64, 16, 16);
+        noKeyTexture = new TextureRegion(noKeytexture,0,80, 16, 16);
     }
     /**
      * Creates an animation from a specific row of a sprite sheet.
