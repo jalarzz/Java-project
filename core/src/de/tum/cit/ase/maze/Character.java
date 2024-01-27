@@ -28,8 +28,10 @@ public class Character extends MazeElement implements Movable {
     private static final float INVULNERABILITY_TIME = 3.0f; // 2 seconds of invulnerability
     private float invulnerabilityTimer = 0;
     private Sound loseLife;
+    private Sound keyObtained;
     private Maze maze;
     private boolean isArmed;
+    private boolean keySoundPlayed = false;
 
 
 
@@ -54,6 +56,7 @@ public class Character extends MazeElement implements Movable {
         this.bounds = new Rectangle(x+2,y+2,8,4);
         this.isArmed = false;
         this.loseLife = Gdx.audio.newSound(Gdx.files.internal("Realistic_Punch-Mark_DiAngelo-1609462330.mp3"));
+        this.keyObtained = Gdx.audio.newSound(Gdx.files.internal("mario-coin-sfx.mp3"));
 
     }
 
@@ -111,6 +114,12 @@ public class Character extends MazeElement implements Movable {
                 break;
             case 5: // Key
                 setHasKey(true);
+                if (!keySoundPlayed) {
+                    keyObtained.play();
+                    keySoundPlayed = true;
+                }
+
+
 
 
 

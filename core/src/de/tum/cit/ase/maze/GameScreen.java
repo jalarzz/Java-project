@@ -56,11 +56,13 @@ public class GameScreen implements Screen {
         // Get the textures for the HUD
         TextureRegion fullHeart = game.getFullHeartTexture();
         TextureRegion emptyHeart = game.getEmptyHeartTexture();
-        TextureRegion keyTexture = game.getKeyTexture();
-        TextureRegion noKeyTexture = game.getNoKeyTexture();
+//        TextureRegion keyTexture = game.getKeyTexture();
+//        TextureRegion noKeyTexture = game.getNoKeyTexture();
+        Animation<TextureRegion> keyAnimation = game.loadKeyAnimation();
+        Animation<TextureRegion> noKeyAnimation = game.loadNoKeyAnimation();
 
         // Initialize HUD
-        hud = new HUD(fullHeart, emptyHeart, keyTexture, noKeyTexture, 5, 0);
+        hud = new HUD(fullHeart, emptyHeart, noKeyAnimation,keyAnimation, 5);
 
         /**
          * todo:
@@ -261,7 +263,7 @@ public class GameScreen implements Screen {
         }
 
         playerCharacter.updateStatus(game.getMaze(), mazeElements);
-        hud.updateKey(playerCharacter.hasKey());
+        hud.updateKey(Gdx.graphics.getDeltaTime(), playerCharacter.hasKey());
         hud.updateExit(playerCharacter.hasReachedExit());
         playerCharacter.update(Gdx.graphics.getDeltaTime());
          // Update character status based on current position in the maze

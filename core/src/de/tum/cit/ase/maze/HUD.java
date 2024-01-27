@@ -2,6 +2,7 @@ package de.tum.cit.ase.maze;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -16,16 +17,20 @@ public class HUD {
     private final Stage stage;
     private final Image[] hearts;
     private final Image keyImage;
-    private final TextureRegion keyTexture;
-    private final TextureRegion noKeyTexture;
+//    private final TextureRegion keyTexture;
+//    private final TextureRegion noKeyTexture;
     float heartScaling = 2.0f;
     float keyScaling = 5f;
+    private Animation<TextureRegion> keyAnimation;
+    private Animation<TextureRegion> noKeyAnimation;
+    private float stateTime = 0;
 
 
-    public HUD(TextureRegion fullHeart, TextureRegion emptyHeart, TextureRegion keyTexture, TextureRegion noKeyTexture, int initialLives, float timer) {
-        this.keyTexture = keyTexture;
-        this.noKeyTexture = noKeyTexture;
+    public HUD(TextureRegion fullHeart, TextureRegion emptyHeart, Animation<TextureRegion> keyAnimation, Animation<TextureRegion> noKeyAnimation, int initialLives) {
+        // ... existing initialization code ...
 
+        this.keyAnimation = keyAnimation;
+        this.noKeyAnimation = noKeyAnimation;
 
 
 
@@ -45,9 +50,9 @@ public class HUD {
 
         // Set up the right table for the key image
         rightTable.top().right();
-        keyImage = new Image(noKeyTexture);
-        keyImage.setScale(keyScaling);// Set the size of the key image
-        rightTable.add(keyImage).pad(50,0,0,50);
+        keyImage = new Image(noKeyAnimation.getKeyFrame(0)); // Initialize with the first frame of no key animation
+        keyImage.setScale(keyScaling);
+        rightTable.add(keyImage).pad(50, 0, 0, 50);
 
         // Add both tables to the stage
         stage.addActor(leftTable);
@@ -65,9 +70,13 @@ public class HUD {
         }
     }
 
-    public void updateKey(boolean hasKey) {
-        keyImage.setDrawable(new TextureRegionDrawable(hasKey ? keyTexture : noKeyTexture));
+    public void updateKey(float delta, boolean hasKey) {
+        stateTime += delta; // Update stateTime with the time elapsed since the last frame
+
+        Animation<TextureRegion> currentAnimation = hasKey ? noKeyAnimation : keyAnimation;
+        keyImage.setDrawable(new TextureRegionDrawable(currentAnimation.getKeyFrame(stateTime, true)));
     }
+
     public void updateExit(boolean reachedExit) {
         if(reachedExit){
             Label exitLabel = new Label("Exit reached", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
@@ -81,6 +90,8 @@ public class HUD {
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
     }
+
+
 
     public void dispose() {
         stage.dispose();

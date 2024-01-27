@@ -49,8 +49,10 @@ public class MazeRunnerGame extends Game {
 
     private TextureRegion fullHeartTexture;
     private TextureRegion emptyHeartTexture;
-    private TextureRegion keyTexture;
-    private TextureRegion noKeyTexture;
+//    private TextureRegion keyTexture;
+//    private TextureRegion noKeyTexture;
+    private Animation<TextureRegion> noKeyAnimation;
+    private Animation<TextureRegion> keyAnimation;
 
 
     private Music backgroundMusic;
@@ -123,7 +125,8 @@ public class MazeRunnerGame extends Game {
         //keyTextureRegion = new TextureRegion(mazeElementsTexture, 64, 64, 16, 16);
         floorTextureRegion = new TextureRegion(mazeElementsTexture, 0, 16, 16, 16);
 
-
+keyAnimation = loadKeyAnimation();
+noKeyAnimation = loadNoKeyAnimation();
 
 
 
@@ -269,8 +272,8 @@ public class MazeRunnerGame extends Game {
         Texture keytexture = new Texture(Gdx.files.internal("objects.png"));
         fullHeartTexture = new TextureRegion(spriteSheet, 64, 0,16, 16);
         emptyHeartTexture = new TextureRegion(spriteSheet, 128, 0,16,16);
-        keyTexture = new TextureRegion(keytexture,0,64, 16, 16);
-        noKeyTexture = new TextureRegion(noKeytexture,0,80, 16, 16);
+//        keyTexture = new TextureRegion(keytexture,0,64, 16, 16);
+//        noKeyTexture = new TextureRegion(noKeytexture,0,80, 16, 16);
     }
     /**
      * Creates an animation from a specific row of a sprite sheet.
@@ -282,6 +285,44 @@ public class MazeRunnerGame extends Game {
         }
         return new Animation<>(0.1f, frames);
     }
+    protected Animation<TextureRegion> loadNoKeyAnimation() {
+        Texture noKeySheet = new Texture(Gdx.files.internal("objects.png")); // Make sure this path is correct
+
+        int frameWidth = 16; // Make sure these dimensions match your sprite sheet
+        int frameHeight = 16;
+        int animationFrames = 4; // Ensure you have 9 frames in the sprite sheet
+        int startCol = 0; // Starting column for trap animation frames (adjust as needed)
+        int startRow = 5; // Starting row for trap animation frames (adjust as needed)
+
+        Array<TextureRegion> noKeyFrames = new Array<>(TextureRegion.class);
+
+        for (int col = 0; col < animationFrames; col++) {
+            // Calculate the x and y position for each frame in the sprite sheet
+            int x = (startCol + col) * frameWidth;
+            int y = startRow * frameHeight;
+
+            noKeyFrames.add(new TextureRegion(noKeySheet, x, y, frameWidth, frameHeight));}
+        return new Animation<>(0.1f, noKeyFrames); }// Adjust the frame duration as needed
+
+//    protected Animation<TextureRegion> loadKeyAnimation() {
+//        Texture keySheet = new Texture(Gdx.files.internal("objects.png")); // Make sure this path is correct
+//
+//        int frameWidth = 16; // Make sure these dimensions match your sprite sheet
+//        int frameHeight = 16;
+//        int animationFrames = 4; // Ensure you have 9 frames in the sprite sheet
+//        int startCol = 0; // Starting column for trap animation frames (adjust as needed)
+//        int startRow = 4; // Starting row for trap animation frames (adjust as needed)
+//
+//        Array<TextureRegion> keyFrames = new Array<>(TextureRegion.class);
+//
+//        for (int col = 0; col < animationFrames; col++) {
+//            // Calculate the x and y position for each frame in the sprite sheet
+//            int x = (startCol + col) * frameWidth;
+//            int y = startRow * frameHeight;
+//
+//            keyFrames.add(new TextureRegion(keySheet, x, y, frameWidth, frameHeight));}
+//        return new Animation<>(0.1f, keyFrames); }// Adjust the frame duration as needed
+
     protected Animation<TextureRegion> loadTrapAnimation() {
         Texture trapSheet = new Texture(Gdx.files.internal("objects.png")); // Adjust the file name as needed
 
@@ -392,13 +433,13 @@ public class MazeRunnerGame extends Game {
         return emptyHeartTexture;
     }
 
-    public TextureRegion getKeyTexture() {
-        return keyTexture;
-    }
-
-    public TextureRegion getNoKeyTexture() {
-        return noKeyTexture;
-    }
+//    public TextureRegion getKeyTexture() {
+//        return keyTexture;
+//    }
+//
+//    public TextureRegion getNoKeyTexture() {
+//        return noKeyTexture;
+//    }
 
     public Animation<TextureRegion> getEnemyDownAnimation() {
         return enemyDownAnimation;
