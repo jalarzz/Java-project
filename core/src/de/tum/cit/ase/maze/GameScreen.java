@@ -208,14 +208,19 @@ public class GameScreen implements Screen {
 
 
         game.getSpriteBatch().begin(); // Important to call this before drawing anything
+        for(int i = 0; i< game.getMaze().getLayout().length; i++){
+            for(int j = 0; j<game.getMaze().getLayout()[0].length;j++){
+                game.getSpriteBatch().draw(
+                        MazeRunnerGame.getFloorTextureRegion(),
+                        i*16,
+                        j*16
+        );
+            }
+        }
 
         for (MazeElement element : mazeElements) {
             // Draw the floor for every element
-            game.getSpriteBatch().draw(
-                    MazeRunnerGame.getFloorTextureRegion(),
-                    element.getX() ,
-                    element.getY()
-            );
+
 
             if (element instanceof Trap) {
                 Trap trap = (Trap) element;
@@ -238,10 +243,6 @@ public class GameScreen implements Screen {
                 if (!playerCharacter.hasKey()){
                 key.update(delta); // Update the key animation
                 key.draw(game.getSpriteBatch());}
-            } else
-            {
-                // For other elements, render them on top of the floor
-                element.draw(game.getSpriteBatch());
             }
         }
 
