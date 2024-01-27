@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Array;
 
 /**
  * Character class represents the player character in the game.
@@ -108,10 +109,6 @@ public class Character extends MazeElement implements Movable {
                 setPosition(newX, newY);
                 camera.position.set(bounds.x, bounds.y, camera.position.z);
                 break;
-            case 4: // Enemy
-                loseLife();
-                // Additional logic for bounce-back effect
-                break;
             case 5: // Key
                 setHasKey(true);
 
@@ -184,31 +181,43 @@ public class Character extends MazeElement implements Movable {
      *
      * @param maze The maze containing the elements.
      */
-    public void updateStatus(Maze maze) {
-        int elementType = maze.getElementAt((int)x,(int) y);
-        switch (elementType) {
-            case 2: // Exit
-                break;
-            case 3: // Trap
-                loseLife();
-                break;
-            case 4: // Enemy
-                loseLife();
-                break;
-            case 5: // Key
-                hasKey = true;
-                break;
-            // Add more cases as needed
+    public void updateStatus(Maze maze, Array<MazeElement> mazeElements) {
+        try {
+            int elementType = maze.getElementAt((int) x, (int) y);
+            Gdx.app.log("updateStatus", "Element Type: " + elementType);
+
+            switch (elementType) {
+                case 2: // Exit
+                    break;
+                case 3: // Trap
+                    loseLife();
+                    break;
+                case 5: // Key
+                    hasKey = true;
+                    break;
+            }
+
+            for (MazeElement element : mazeElements) {
+                if (element instanceof Enemy) {
+                    Enemy enemy = (Enemy) element;
+                    if (this.bounds.overlaps(enemy.getBounds())) {
+                        Gdx.app.log("updateStatus", "Collision with Enemy");
+                        loseLife();
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Gdx.app.error("updateStatus", "Error in updateStatus: " + e.getMessage(), e);
         }
     }
-
     /**
      * Decreases the character's lives by one.
      */
     private void loseLife() {
         if (invulnerabilityTimer <= 0) {
             lives--;
-            loseLife.play();
+          loseLife.play();
             invulnerabilityTimer = INVULNERABILITY_TIME;
             if (lives <= 0) {
 

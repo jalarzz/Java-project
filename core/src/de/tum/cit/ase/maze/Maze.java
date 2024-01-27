@@ -130,7 +130,7 @@ public class Maze {
                         return 0;
                     case 2: // Exit
                         if (!hasKey) return 2;
-                        if (hasKey) return 7;
+                        if (hasKey) return 22;
 
                         // Collision with locked door if no key
                     case 3: // Trap

@@ -260,14 +260,13 @@ public class GameScreen implements Screen {
             game.showGameOverScreen();
         }
 
-        playerCharacter.updateStatus(game.getMaze());
+        playerCharacter.updateStatus(game.getMaze(), mazeElements);
         hud.updateKey(playerCharacter.hasKey());
-        playerCharacter.updateStatus(game.getMaze());
         hud.updateExit(playerCharacter.hasReachedExit());
         playerCharacter.update(Gdx.graphics.getDeltaTime());
-        playerCharacter.updateStatus(game.getMaze()); // Update character status based on current position in the maze
+         // Update character status based on current position in the maze
         // Check if player has reached the exit and has the key
-        if (playerCharacter.hasKey() && maze.checkCollision(playerCharacter.getBounds(), true) ==7 ) {
+        if (playerCharacter.hasKey() && maze.checkCollision(playerCharacter.getBounds(), true) ==22 ) {
             game.showVictoryScreen();
         }
         hud.draw();}

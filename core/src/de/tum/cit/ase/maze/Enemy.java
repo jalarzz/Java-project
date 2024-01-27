@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 
+import java.util.List;
+
 import static com.badlogic.gdx.math.MathUtils.random;
 
 public class Enemy extends MazeElement implements Movable {
@@ -16,6 +18,14 @@ public class Enemy extends MazeElement implements Movable {
     private Maze maze;
     private Animation<TextureRegion>[] animations; // Animations for different directions
     private float stateTime; // Time since the animation started
+    private AStar pathfinder;
+    private List<Node> currentPath;
+    private int pathIndex;
+    private final float UPDATE_PATH_THRESHOLD = 64.0f;
+    private final float REACHED_NODE_TOLERANCE = 4.0f;
+    private float speed = 100.0f;
+    private float someThreshold = 100.0f;
+
 
     public Enemy(TextureRegion texture, int x, int y, Character player, Maze maze, Animation<TextureRegion>[] animations) {
         super(texture, x, y, TILE_SIZE, TILE_SIZE);
@@ -25,6 +35,7 @@ public class Enemy extends MazeElement implements Movable {
         this.maze = maze; // Reference to the maze
         this.animations = animations;
         this.stateTime = 0f;
+        this.pathfinder = new AStar(convertToNodes(maze.getLayout()));
     }
 
     @Override
@@ -44,21 +55,24 @@ public class Enemy extends MazeElement implements Movable {
         // Collision checking
         Rectangle tempBounds = new Rectangle(bounds);
         tempBounds.setPosition(newX, newY);
-        int collisionType = maze.checkCollision(tempBounds,false);
-        if (collisionType == 0) { // Wall collision
-            handleWallCollision();
+        int collisionType = maze.checkCollision(tempBounds, false);
+
+        // Check for collisions with walls and doors
+        if (collisionType == 0 || collisionType == 1 || collisionType == 2 || collisionType == 3) {
+            handleWallCollision(); // Handle wall collisions (e.g., change direction)
         } else {
             // Update the current position in the maze layout to floor
-            maze.setElementAt((int) x/TILE_SIZE, (int) y/TILE_SIZE, -1);
+            maze.setElementAt((int) x / TILE_SIZE, (int) y / TILE_SIZE, -1);
 
             // Update position
             setPosition(newX, newY);
 
             // Update the new position in the maze layout to enemy
-            maze.setElementAt((int)x / TILE_SIZE, (int)y / TILE_SIZE, 4);
+            maze.setElementAt((int) x / TILE_SIZE, (int) y / TILE_SIZE, 4);
         }
         Gdx.app.debug("Enemy", "Moved to x=" + x + ", y=" + y);
     }
+
     // New constructor without player parameter
     public Enemy(TextureRegion texture, int x, int y, Maze maze, Animation<TextureRegion>[] animations) {
         super(texture, x, y, TILE_SIZE, TILE_SIZE);
@@ -75,7 +89,18 @@ public class Enemy extends MazeElement implements Movable {
         }
         this.player = player;
     }
+    private Node[][] convertToNodes(int[][] layout) {
+        Node[][] nodes = new Node[layout.length][layout[0].length];
 
+        for (int x = 0; x < layout.length; x++) {
+            for (int y = 0; y < layout[x].length; y++) {
+                // Assuming that 0 represents a walkable path in your maze
+                nodes[x][y] = new Node(x, y, layout[x][y] == 0);
+            }
+        }
+
+        return nodes;
+    }
     /**
      * Handles the patrolling behavior of the enemy within a 3x3 grid.
      * The enemy moves randomly within this grid, avoiding walls and traps.
@@ -86,29 +111,47 @@ public class Enemy extends MazeElement implements Movable {
      */
     private void patrol(float delta, Maze maze) {
         // Define the 3x3 grid bounds around the enemy
-        int gridMinX = (int)bounds.x - TILE_SIZE;
-        int gridMaxX = (int)bounds.x + TILE_SIZE;
-        int gridMinY = (int)bounds.y - TILE_SIZE;
-        int gridMaxY = (int)bounds.y + TILE_SIZE;
-
-        // Check if the player enters the grid
-        if (playerEntersGrid(gridMinX, gridMaxX, gridMinY, gridMaxY)) {
-            if (player.isArmed()) {
-                currentState = EnemyState.FLEEING;
-            } else {
-                currentState = EnemyState.CHASING;
-            }
-            return;
-        }
-
-        // Decide whether to change direction based on the current position and direction
-        if (shouldChangeDirection(gridMinX, gridMaxX, gridMinY, gridMaxY, maze)) {
-            chooseNewDirection(gridMinX, gridMaxX, gridMinY, gridMaxY, maze);
-        }
-
-        // Move in the current direction
         move(currentDirection, maze, delta);
-        Gdx.app.debug("Enemy", "Patrolling. Current direction: " + currentDirection);
+    }
+    private void chase(float delta) {
+        if (pathNeedsUpdate()) {
+            // Recalculate the path towards the player
+            currentPath = pathfinder.findPath((int)x, (int)y, (int)player.getX(), (int)player.getY());
+            pathIndex = 0;
+        }
+        followPath();
+    }
+
+    private void flee(float delta) {
+        if (pathNeedsUpdate()) {
+            // Determine the flee target coordinates
+            int fleeTargetX, fleeTargetY;
+
+            // Calculate differences in X and Y coordinates
+            int diffX = (int)player.getX() - (int)x;
+            int diffY = (int)player.getY() - (int)y;
+
+            // Determine flee direction (opposite to the player's direction)
+            if (diffX == 0) {
+                fleeTargetX = (int)x; // same X-coordinate if player is directly above or below
+            } else {
+                fleeTargetX = (int) ((int)x - 2 * Math.signum(diffX)); // move in the opposite X direction
+            }
+
+            if (diffY == 0) {
+                fleeTargetY = (int)y; // same Y-coordinate if player is directly left or right
+            } else {
+                fleeTargetY = (int) ((int)y - 2 * Math.signum(diffY)); // move in the opposite Y direction
+            }
+
+            // Adjust the target coordinates to ensure they are within the maze boundaries
+            fleeTargetX = Math.max(0, Math.min(fleeTargetX, maze.getLayout().length - 1));
+            fleeTargetY = Math.max(0, Math.min(fleeTargetY, maze.getLayout()[0].length - 1));
+
+            currentPath = pathfinder.findPath((int)x, (int)y, fleeTargetX, fleeTargetY);
+            pathIndex = 0;
+        }
+        followPath();
     }
     /**
      * Chooses a new direction for the enemy that is valid within the specified grid bounds and avoids collisions.
@@ -136,17 +179,17 @@ public class Enemy extends MazeElement implements Movable {
                 case RIGHT: projectedBounds.x += speed; break;
             }
 
-            // Check if new direction is valid
-            if (projectedBounds.x >= gridMinX && projectedBounds.x + projectedBounds.width <= gridMaxX &&
-                    projectedBounds.y >= gridMinY && projectedBounds.y + projectedBounds.height <= gridMaxY &&
-                    maze.checkCollision(projectedBounds, false) != 0) {
-                break; // Found a valid new direction
-            }
         }
 
-        currentDirection = (newDirection != null) ? newDirection : currentDirection;
-        // If no valid direction found, keep the current direction
+        if (newDirection != null) {
+            currentDirection = newDirection; // Update the direction
+            stateTime = 0f; // Reset animation state time
+        }
     }
+
+
+
+
 
     /**
      * Checks if the player character has entered the enemy's patrolling grid.
@@ -204,9 +247,7 @@ public class Enemy extends MazeElement implements Movable {
     private void handleWallCollision() {
         // Randomly choose a new direction
         // You can make this more sophisticated based on the current state
-        Direction[] directions = Direction.values();
-        Direction newDirection = directions[random.nextInt(directions.length)];
-        this.currentDirection = newDirection; // Update the direction
+        currentDirection = Direction.values()[random.nextInt(Direction.values().length)];
     }
     //TODO add setPosition to Movable interface
     /**
@@ -227,27 +268,18 @@ public class Enemy extends MazeElement implements Movable {
      */
 
     public void update(float delta) {
-        try {
-            stateTime += delta;
+        stateTime += delta;
 
-            Gdx.app.debug("Enemy", "Updating enemy. Current state: " + currentState);
-
-            switch (currentState) {
-                case PATROLLING:
-                    patrol(delta, maze);
-                    Gdx.app.debug("Enemy", "Patrolling state. X: " + x + ", Y: " + y + ", Direction: " + currentDirection);
-                    break;
-                case CHASING:
-                    // Implement chasing behavior
-                    Gdx.app.debug("Enemy", "Chasing state. Player X: " + player.getX() + ", Player Y: " + player.getY());
-                    break;
-                case FLEEING:
-                    // Implement fleeing behavior
-                    Gdx.app.debug("Enemy", "Fleeing state. Player X: " + player.getX() + ", Player Y: " + player.getY());
-                    break;
-            }
-        } catch (Exception e) {
-            Gdx.app.error("Enemy", "Error in update method: " + e.getMessage(), e);
+        switch (currentState) {
+            case PATROLLING:
+                patrol(delta, maze);
+                break;
+            case CHASING:
+                chase(delta);
+                break;
+            case FLEEING:
+                flee(delta);
+                break;
         }
     }
 
@@ -261,7 +293,46 @@ public class Enemy extends MazeElement implements Movable {
         TextureRegion currentFrame = animations[currentDirection.ordinal()].getKeyFrame(stateTime, true);
         batch.draw(currentFrame, x, y, TILE_SIZE, TILE_SIZE);
     }
+    private boolean pathNeedsUpdate() {
+        // Recalculate path if it's null or completed
+        return currentPath == null || pathIndex >= currentPath.size() ||
+                distanceSquared(x, y, player.getX(), player.getY()) > someThreshold; // Recalculate if player moved significantly
+    }
+    private void followPath() {
+        if (currentPath != null && pathIndex < currentPath.size()) {
+            Node nextNode = currentPath.get(pathIndex);
+            moveTowards(nextNode.x, nextNode.y);
+            if (reachedNode(nextNode)) {
+                pathIndex++;
+            }
+        }
+    }
+    private void moveTowards(int targetX, int targetY) {
+        float diffX = targetX - x;
+        float diffY = targetY - y;
+        float magnitude = (float) Math.sqrt(diffX * diffX + diffY * diffY);
 
+        // Calculate movement without multiplying by delta since it's already in your chase and flee methods
+        float moveX = speed * (diffX / magnitude);
+        float moveY = speed * (diffY / magnitude);
 
+        x += moveX;
+        y += moveY;
+
+        if (Math.abs(moveX) > Math.abs(moveY)) {
+            currentDirection = moveX > 0 ? Direction.RIGHT : Direction.LEFT;
+        } else {
+            currentDirection = moveY > 0 ? Direction.UP : Direction.DOWN;
+        }
+    }
+    private boolean reachedNode(Node node) {
+        return distanceSquared(x, y, node.x * TILE_SIZE, node.y * TILE_SIZE) < REACHED_NODE_TOLERANCE;
+    }
+
+    private float distanceSquared(float x1, float y1, float x2, float y2) {
+        float dx = x2 - x1;
+        float dy = y2 - y1;
+        return dx * dx + dy * dy;
+    }
 
 }

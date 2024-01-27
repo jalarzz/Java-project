@@ -131,6 +131,7 @@ public class MazeRunnerGame extends Game {
         // Background sound
        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3"));
        backgroundMusic.setLooping(true);
+       backgroundMusic.setVolume(0.1f);
        backgroundMusic.play();
         loadTextures();
         gameOverMusic = Gdx.audio.newMusic(Gdx.files.internal("No Hope.mp3"));
@@ -257,9 +258,9 @@ public class MazeRunnerGame extends Game {
 
         // Create animations for each direction
         enemyDownAnimation = createAnimation(walkSheet, 0, frameWidth, frameHeight, animationFrames);
-        enemyLeftAnimation = createAnimation(walkSheet, 3, frameWidth, frameHeight, animationFrames);
-        enemyRightAnimation = createAnimation(walkSheet, 1, frameWidth, frameHeight, animationFrames);
-        enemyUpAnimation = createAnimation(walkSheet, 2, frameWidth, frameHeight, animationFrames);
+        enemyLeftAnimation = createAnimation(walkSheet, 1, frameWidth, frameHeight, animationFrames);
+        enemyRightAnimation = createAnimation(walkSheet, 2, frameWidth, frameHeight, animationFrames);
+        enemyUpAnimation = createAnimation(walkSheet, 3, frameWidth, frameHeight, animationFrames);
     }
     private void loadTextures() {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
