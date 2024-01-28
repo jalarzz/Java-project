@@ -130,6 +130,7 @@ noKeyAnimation = loadNoKeyAnimation();
 
 
 
+
         // Play some background music
         // Background sound
        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3"));

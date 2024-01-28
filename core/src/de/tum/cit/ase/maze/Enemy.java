@@ -21,14 +21,13 @@ public class Enemy extends MazeElement implements Movable {
     private AStar pathfinder;
     private List<Node> currentPath;
     private int pathIndex;
-    private final float UPDATE_PATH_THRESHOLD = 64.0f;
     private final float REACHED_NODE_TOLERANCE = 4.0f;
-    private float speed = 100.0f;
-    private float someThreshold = 100.0f;
+    private float speed = 80.0f;
+    private float someThreshold = 50f;
 
 
     public Enemy(TextureRegion texture, int x, int y, Character player, Maze maze, Animation<TextureRegion>[] animations) {
-        super(texture, x, y, TILE_SIZE, TILE_SIZE);
+        super(texture,x,y, TILE_SIZE, TILE_SIZE);
         this.currentState = EnemyState.PATROLLING;
         this.currentDirection = Direction.values()[random.nextInt(Direction.values().length)]; // Random initial direction
         this.player = player; // Reference to the player character
@@ -36,20 +35,32 @@ public class Enemy extends MazeElement implements Movable {
         this.animations = animations;
         this.stateTime = 0f;
         this.pathfinder = new AStar(convertToNodes(maze.getLayout()));
+
     }
 
     @Override
     public void move(Direction direction, Maze maze, float delta) {
-        float newX = x, newY = y;
         float speed = TILE_SIZE * delta; // Adjust the speed if necessary
+        float newX = x;
+        float newY = y;
+
 
         // Calculate new position
         switch (direction) {
-            case UP:    newY += speed; break;
-            case DOWN:  newY -= speed; break;
-            case LEFT:  newX -= speed; break;
-            case RIGHT: newX += speed; break;
-            default:    return; // Invalid direction
+            case UP:
+                newY += speed;
+                break;
+            case DOWN:
+                newY -= speed;
+                break;
+            case LEFT:
+                newX -= speed;
+                break;
+            case RIGHT:
+                newX += speed;
+                break;
+            default:
+                return; // Invalid direction
         }
 
         // Collision checking
@@ -57,9 +68,9 @@ public class Enemy extends MazeElement implements Movable {
         tempBounds.setPosition(newX, newY);
         int collisionType = maze.checkCollision(tempBounds, false);
 
-        // Check for collisions with walls and doors
-        if (collisionType == 0 || collisionType == 1 || collisionType == 2 || collisionType == 3) {
-            handleWallCollision(); // Handle wall collisions (e.g., change direction)
+// Check for collisions with walls and doors
+        if (collisionType == 0) {
+            handleWallCollision();
         } else {
             // Update the current position in the maze layout to floor
             maze.setElementAt((int) x / TILE_SIZE, (int) y / TILE_SIZE, -1);
@@ -70,7 +81,6 @@ public class Enemy extends MazeElement implements Movable {
             // Update the new position in the maze layout to enemy
             maze.setElementAt((int) x / TILE_SIZE, (int) y / TILE_SIZE, 4);
         }
-        Gdx.app.debug("Enemy", "Moved to x=" + x + ", y=" + y);
     }
 
     // New constructor without player parameter
@@ -89,6 +99,7 @@ public class Enemy extends MazeElement implements Movable {
         }
         this.player = player;
     }
+
     private Node[][] convertToNodes(int[][] layout) {
         Node[][] nodes = new Node[layout.length][layout[0].length];
 
@@ -101,6 +112,7 @@ public class Enemy extends MazeElement implements Movable {
 
         return nodes;
     }
+
     /**
      * Handles the patrolling behavior of the enemy within a 3x3 grid.
      * The enemy moves randomly within this grid, avoiding walls and traps.
@@ -110,9 +122,55 @@ public class Enemy extends MazeElement implements Movable {
      * @param maze  The maze in which the enemy is moving.
      */
     private void patrol(float delta, Maze maze) {
-        // Define the 3x3 grid bounds around the enemy
-        move(currentDirection, maze, delta);
+        // Calculate the enemy's next position based on its current direction and speed
+        float speed = TILE_SIZE * delta;
+        float projectedX = x, projectedY = y;
+
+        switch (currentDirection) {
+            case UP:
+                projectedY += speed;
+                break;
+            case DOWN:
+                projectedY -= speed;
+                break;
+            case LEFT:
+                projectedX -= speed;
+                break;
+            case RIGHT:
+                projectedX += speed;
+                break;
+        }
+
+        // Check if the projected position collides with a wall or trap
+        if (!isCollisionWithWall(projectedX, projectedY, maze)) {
+            // If there is no collision, update the position
+            setPosition(projectedX, projectedY);
+        } else {
+            // If there is a collision, choose a new direction
+            chooseNewDirection(maze);
+        }
+
+
     }
+
+    private boolean isCollisionWithWall(float x, float y, Maze maze) {
+        int gridX = (int) (x / TILE_SIZE);
+        int gridY = (int) (y / TILE_SIZE);
+
+        // Check bounds
+        if (gridX < 0 || gridY < 0 || gridX >= maze.getLayout().length || gridY >= maze.getLayout()[0].length) {
+            return true; // Indicating collision with a wall (out of bounds)
+        }
+
+        int tileType = maze.getElementAt(gridX, gridY);
+        return tileType == 0; // Collision with a wall if the tile type is 0 (assuming 0 represents a wall)
+
+    } private boolean isCollisionWithTrap(float x, float y, Maze maze) {
+        // Check for collision with walls in the maze
+        // Assuming that the maze provides a method to check for wall collision
+        // You might need to adjust this based on your maze's implementation
+        return maze.checkCollision(new Rectangle(x, y, TILE_SIZE, TILE_SIZE), true) == 3;
+}
     private void chase(float delta) {
         if (pathNeedsUpdate()) {
             // Recalculate the path towards the player
@@ -156,36 +214,39 @@ public class Enemy extends MazeElement implements Movable {
     /**
      * Chooses a new direction for the enemy that is valid within the specified grid bounds and avoids collisions.
      *
-     * @param gridMinX The minimum X-coordinate of the grid.
-     * @param gridMaxX The maximum X-coordinate of the grid.
-     * @param gridMinY The minimum Y-coordinate of the grid.
-     * @param gridMaxY The maximum Y-coordinate of the grid.
+
      * @param maze     The maze in which the enemy is moving.
      */
-    private void chooseNewDirection(int gridMinX, int gridMaxX, int gridMinY, int gridMaxY, Maze maze) {
+    private void chooseNewDirection(Maze maze) {
         Direction[] directions = Direction.values();
-        Direction newDirection = null;
-        Rectangle projectedBounds = new Rectangle(bounds);
+        Direction newDirection;
+        boolean collision;
 
-        for (int attempt = 0; attempt < directions.length; attempt++) {
+        do {
             newDirection = directions[random.nextInt(directions.length)];
+            float projectedX = x, projectedY = y;
             float speed = TILE_SIZE;
 
-            projectedBounds.setPosition(bounds.x, bounds.y); // Reset to current position
             switch (newDirection) {
-                case UP:    projectedBounds.y += speed; break;
-                case DOWN:  projectedBounds.y -= speed; break;
-                case LEFT:  projectedBounds.x -= speed; break;
-                case RIGHT: projectedBounds.x += speed; break;
+                case UP:    projectedY += speed; break;
+                case DOWN:  projectedY -= speed; break;
+                case LEFT:  projectedX -= speed; break;
+                case RIGHT: projectedX += speed; break;
             }
 
-        }
+            collision = isCollisionWithWall(projectedX, projectedY, maze);
 
-        if (newDirection != null) {
-            currentDirection = newDirection; // Update the direction
-            stateTime = 0f; // Reset animation state time
-        }
+            // Ensure that the new direction is not the same as the previous direction
+            if (newDirection == currentDirection) {
+                collision = true;
+            }
+
+        } while (collision);
+
+        currentDirection = newDirection;
     }
+
+
 
 
 
@@ -245,10 +306,34 @@ public class Enemy extends MazeElement implements Movable {
      * The enemy will choose a new direction to move in.
      */
     private void handleWallCollision() {
-        // Randomly choose a new direction
-        // You can make this more sophisticated based on the current state
-        currentDirection = Direction.values()[random.nextInt(Direction.values().length)];
+        if (currentState == EnemyState.PATROLLING) {
+            // When patrolling, randomly choose a new direction
+            currentDirection = Direction.values()[random.nextInt(Direction.values().length)];
+        } else if (currentState == EnemyState.CHASING) {
+            // When chasing, prioritize the direction that gets closer to the player
+            Direction playerDirectionX = (player.getX() > x) ? Direction.RIGHT : Direction.LEFT;
+            Direction playerDirectionY = (player.getY() > y) ? Direction.UP : Direction.DOWN;
+
+            // Randomly choose between X and Y directions with bias towards player's direction
+            if (random.nextFloat() < 0.7f) {
+                currentDirection = playerDirectionX;
+            } else {
+                currentDirection = playerDirectionY;
+            }
+        } else if (currentState == EnemyState.FLEEING) {
+            // When fleeing, move away from the player
+            Direction playerDirectionX = (player.getX() > x) ? Direction.LEFT : Direction.RIGHT;
+            Direction playerDirectionY = (player.getY() > y) ? Direction.DOWN : Direction.UP;
+
+            // Randomly choose between X and Y directions with bias away from player's direction
+            if (random.nextFloat() < 0.7f) {
+                currentDirection = playerDirectionX;
+            } else {
+                currentDirection = playerDirectionY;
+            }
+        }
     }
+
     //TODO add setPosition to Movable interface
     /**
      * Updates the enemy's position and its bounding box.

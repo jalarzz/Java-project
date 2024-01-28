@@ -193,7 +193,7 @@ public class Character extends MazeElement implements Movable {
     public void updateStatus(Maze maze, Array<MazeElement> mazeElements) {
         try {
             int elementType = maze.getElementAt((int) x, (int) y);
-            Gdx.app.log("updateStatus", "Element Type: " + elementType);
+            //Gdx.app.log("updateStatus", "Element Type: " + elementType);
 
             switch (elementType) {
                 case 2: // Exit
@@ -210,7 +210,7 @@ public class Character extends MazeElement implements Movable {
                 if (element instanceof Enemy) {
                     Enemy enemy = (Enemy) element;
                     if (this.bounds.overlaps(enemy.getBounds())) {
-                        Gdx.app.log("updateStatus", "Collision with Enemy");
+                       // Gdx.app.log("updateStatus", "Collision with Enemy");
                         loseLife();
                         break;
                     }

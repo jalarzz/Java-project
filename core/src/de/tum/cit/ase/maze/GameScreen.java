@@ -210,41 +210,48 @@ public class GameScreen implements Screen {
 
 
         game.getSpriteBatch().begin(); // Important to call this before drawing anything
-        for(int i = 0; i< game.getMaze().getLayout().length; i++){
-            for(int j = 0; j<game.getMaze().getLayout()[0].length;j++){
-                game.getSpriteBatch().draw(
-                        MazeRunnerGame.getFloorTextureRegion(),
-                        i*16,
-                        j*16
-        );
+
+
+        for (int i = 0; i < game.getMaze().getLayout().length; i++) {
+            for (int j = 0; j < game.getMaze().getLayout()[0].length; j++) {
+                int cell = game.getMaze().getLayout()[i][j];
+                if (cell != 0) {
+                    game.getSpriteBatch().draw(
+                            MazeRunnerGame.getFloorTextureRegion(),
+                            i * 16, j * 16
+                    );
+                }
             }
         }
 
         for (MazeElement element : mazeElements) {
-            // Draw the floor for every element
-
-
+            // Update and draw specific types of elements
+            if (element instanceof Enemy) {
+                Enemy enemy = (Enemy) element;
+                enemy.update(delta);
+                enemy.draw(game.getSpriteBatch());} else
             if (element instanceof Trap) {
                 Trap trap = (Trap) element;
                 trap.update(Gdx.graphics.getDeltaTime());
                 trap.draw(game.getSpriteBatch());
-            } else if (element instanceof Wall || element instanceof Exit ) {
-                // For Walls and Exits, render them normally without floor below
-                element.draw(game.getSpriteBatch());
-            } else if (element instanceof Enemy) {
-                Enemy enemy = (Enemy) element;
-                enemy.update(delta); // Update the enemy
-                enemy.draw(game.getSpriteBatch()); // Draw the enemy
             } else if (element instanceof Lava) {
                 Lava lava = (Lava) element;
                 lava.update(delta); // Update the lava animation
                 lava.draw(game.getSpriteBatch());
-
-            } else if (element instanceof Key) {
+            } else if (element instanceof Key && !playerCharacter.hasKey()) {
                 Key key = (Key) element;
-                if (!playerCharacter.hasKey()){
-                key.update(delta); // Update the key animation
-                key.draw(game.getSpriteBatch());}
+                key.update(delta); // Update the key animation if the player doesn't have the key
+                key.draw(game.getSpriteBatch());
+            } else if (element instanceof Exit) {
+                Exit exit = (Exit) element;
+                exit.draw(game.getSpriteBatch());
+            } else if (element instanceof Wall) {
+                Wall wall = (Wall) element;
+                wall.draw(game.getSpriteBatch());
+            }
+            else if (element instanceof EntryPoint) {
+                EntryPoint entryPoint = (EntryPoint) element;
+                entryPoint.draw(game.getSpriteBatch());
             }
         }
 
@@ -266,12 +273,13 @@ public class GameScreen implements Screen {
         hud.updateKey(Gdx.graphics.getDeltaTime(), playerCharacter.hasKey());
         hud.updateExit(playerCharacter.hasReachedExit());
         playerCharacter.update(Gdx.graphics.getDeltaTime());
-         // Update character status based on current position in the maze
+        // Update character status based on current position in the maze
         // Check if player has reached the exit and has the key
         if (playerCharacter.hasKey() && maze.checkCollision(playerCharacter.getBounds(), true) ==22 ) {
             game.showVictoryScreen();
         }
         hud.draw();}
+
     @Override
     public void resize(int width, int height) {
         camera.setToOrtho(false);
