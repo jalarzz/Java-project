@@ -122,7 +122,6 @@ public class Enemy extends MazeElement implements Movable {
      * @param maze  The maze in which the enemy is moving.
      */
     private void patrol(float delta, Maze maze) {
-        // Calculate the enemy's next position based on its current direction and speed
         float speed = TILE_SIZE * delta;
         float projectedX = x, projectedY = y;
 
@@ -142,7 +141,7 @@ public class Enemy extends MazeElement implements Movable {
         }
 
         // Check if the projected position collides with a wall or trap
-        if (!isCollisionWithWall(projectedX, projectedY, maze)) {
+        if (!isCollisionWithWall(projectedX, projectedY, maze,currentDirection)) {
             // If there is no collision, update the position
             setPosition(projectedX, projectedY);
         } else {
@@ -151,20 +150,36 @@ public class Enemy extends MazeElement implements Movable {
         }
 
 
-    }
+    }  // Calculate the enemy's next position based on its current direction and speed
 
-    private boolean isCollisionWithWall(float x, float y, Maze maze) {
+
+    private boolean isCollisionWithWall(float x, float y, Maze maze, Direction direction) {
         int gridX = (int) (x / TILE_SIZE);
         int gridY = (int) (y / TILE_SIZE);
 
+        // Determine the next tile based on the direction of movement
+        switch (direction) {
+            case UP:
+                gridY += 1;
+                break;
+            case DOWN:
+                gridY -= 1;
+                break;
+            case LEFT:
+                gridX -= 1;
+                break;
+            case RIGHT:
+                gridX += 1;
+                break;
+        }
+
         // Check bounds
         if (gridX < 0 || gridY < 0 || gridX >= maze.getLayout().length || gridY >= maze.getLayout()[0].length) {
-            return true; // Indicating collision with a wall (out of bounds)
+            return true; // Collision with a wall (out of bounds)
         }
 
         int tileType = maze.getElementAt(gridX, gridY);
-        return tileType == 0; // Collision with a wall if the tile type is 0 (assuming 0 represents a wall)
-
+        return tileType ==0; // Collision with a wall if the tile type is 1 (assuming 1 represents a wall)
     } private boolean isCollisionWithTrap(float x, float y, Maze maze) {
         // Check for collision with walls in the maze
         // Assuming that the maze provides a method to check for wall collision
@@ -234,7 +249,7 @@ public class Enemy extends MazeElement implements Movable {
                 case RIGHT: projectedX += speed; break;
             }
 
-            collision = isCollisionWithWall(projectedX, projectedY, maze);
+            collision = isCollisionWithWall(projectedX, projectedY, maze,currentDirection);
 
             // Ensure that the new direction is not the same as the previous direction
             if (newDirection == currentDirection) {
