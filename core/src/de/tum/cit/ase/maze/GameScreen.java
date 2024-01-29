@@ -29,6 +29,7 @@ public class GameScreen implements Screen {
     private Character playerCharacter; // The player-controlled character
 
     private HUD hud;
+    private boolean isPaused = false;
 
 
 
@@ -272,7 +273,7 @@ public class GameScreen implements Screen {
         hud.updateExit(playerCharacter.hasReachedExit());
         playerCharacter.update(Gdx.graphics.getDeltaTime());// Update character status based on current position in the maze
         // Check if player has reached the exit and has the key
-        if (playerCharacter.hasKey() && maze.checkCollision(playerCharacter.getBounds(), true) ==7 ) {
+        if (playerCharacter.hasKey() && maze.checkCollision(playerCharacter.getBounds(), true) ==22 ) {
             game.showVictoryScreen();
         }
         hud.draw();
@@ -334,10 +335,12 @@ public class GameScreen implements Screen {
 
     @Override
     public void pause() {
+        isPaused = true;
     }
 
     @Override
     public void resume() {
+        isPaused = false;
     }
 
     @Override
