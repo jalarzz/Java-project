@@ -47,9 +47,9 @@ public class MazeRunnerGame extends Game {
     //Maze
     private Maze maze;
 
-    private TextureRegion fullHeartTexture;
-    private TextureRegion emptyHeartTexture;
-//    private TextureRegion keyTexture;
+    private static TextureRegion fullHeartTexture;
+    private static TextureRegion emptyHeartTexture;
+    //    private TextureRegion keyTexture;
 //    private TextureRegion noKeyTexture;
     private Animation<TextureRegion> noKeyAnimation;
     private Animation<TextureRegion> keyAnimation;
@@ -59,6 +59,14 @@ public class MazeRunnerGame extends Game {
     private Music gameOverMusic;
     private Music gameMusic;
     private Music victoryMusic;
+    //Collectibles texture regions
+    private static TextureRegion swordTextureRegion;
+    private static TextureRegion lifeTextureRegion;
+    private static TextureRegion shieldTextureRegion;
+    private static TextureRegion closedChestTextureRegion;
+    private static TextureRegion openChestTextureRegion;
+    private Texture chestTexture;
+    private Texture collectiblesTexture;
 
     public Maze getMaze() {
         return maze;
@@ -114,6 +122,9 @@ public class MazeRunnerGame extends Game {
         mazeElementsTexture = new Texture(Gdx.files.internal("basictiles.png"));
         obstaclesTexture = new Texture(Gdx.files.internal("objects.png"));
         mobsTexture = new Texture(Gdx.files.internal("mobs-sheet.salome.png"));//Enemy design by Salome Tsitskishvili
+        chestTexture = new Texture(Gdx.files.internal("things.png"));
+        collectiblesTexture = new Texture(Gdx.files.internal("pixel_icons_by_oceansdream.png"));
+
 
         // Initialize TextureRegions for each element
         // Adjust the coordinates (x, y) and dimensions (width, height) as per your sprite sheet layout
@@ -125,32 +136,38 @@ public class MazeRunnerGame extends Game {
         //keyTextureRegion = new TextureRegion(mazeElementsTexture, 64, 64, 16, 16);
         floorTextureRegion = new TextureRegion(mazeElementsTexture, 0, 16, 16, 16);
 
-keyAnimation = loadKeyAnimation();
-noKeyAnimation = loadNoKeyAnimation();
+        keyAnimation = loadKeyAnimation();
+        noKeyAnimation = loadNoKeyAnimation();
 
+        //Initialize collectibles textures:
+        swordTextureRegion = new TextureRegion(collectiblesTexture, 16, 0, 16, 16); // Example path
+        lifeTextureRegion = new TextureRegion(collectiblesTexture, 48, 0, 16, 16); // Example path
+        shieldTextureRegion = new TextureRegion(collectiblesTexture, 16, 16, 16, 16); // Example path
 
+        //Initialize chest tectures:
+        closedChestTextureRegion = new TextureRegion(chestTexture, 96, 0, 16, 16);
+        openChestTextureRegion = new TextureRegion(chestTexture, 128, 48, 16, 16);
 
 
         // Play some background music
         // Background sound
-       backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3"));
-       backgroundMusic.setLooping(true);
-       backgroundMusic.setVolume(0.1f);
-       backgroundMusic.play();
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3"));
+        backgroundMusic.setLooping(true);
+        backgroundMusic.setVolume(0.1f);
+        backgroundMusic.play();
         loadTextures();
         gameOverMusic = Gdx.audio.newMusic(Gdx.files.internal("No Hope.mp3"));
         gameMusic = Gdx.audio.newMusic(Gdx.files.internal("Bob&#039;s Adventures - back34.mp3"));
         victoryMusic = Gdx.audio.newMusic(Gdx.files.internal("Riverside Ride.mp3"));
         goToMenu(); // Navigate to the menu screen
     }
+
     public void showGameOverScreen() {
         if (gameMusic.isPlaying()) {
             gameMusic.stop();
-        }
-        else if (backgroundMusic.isPlaying()) {
+        } else if (backgroundMusic.isPlaying()) {
             backgroundMusic.stop();
-        }
-        else if (gameOverMusic.isPlaying()) {
+        } else if (gameOverMusic.isPlaying()) {
             gameOverMusic.stop();
         } else if (victoryMusic.isPlaying()) {
             gameOverMusic.stop();
@@ -159,14 +176,13 @@ noKeyAnimation = loadNoKeyAnimation();
         gameOverMusic.setLooping(true);
         setScreen(new GameOverScreen(this));
     }
+
     public void showVictoryScreen() {
         if (gameMusic.isPlaying()) {
             gameMusic.stop();
-        }
-        else if (backgroundMusic.isPlaying()) {
+        } else if (backgroundMusic.isPlaying()) {
             backgroundMusic.stop();
-        }
-        else if (gameOverMusic.isPlaying()) {
+        } else if (gameOverMusic.isPlaying()) {
             gameOverMusic.stop();
         }
         victoryMusic.play();
@@ -179,10 +195,11 @@ noKeyAnimation = loadNoKeyAnimation();
      * Switches to the menu screen.
      */
     public void goToMenu() {
-        if (gameOverMusic.isPlaying()){ gameOverMusic.stop();}
-        else if (gameMusic.isPlaying()) {
+        if (gameOverMusic.isPlaying()) {
+            gameOverMusic.stop();
+        } else if (gameMusic.isPlaying()) {
             gameMusic.stop();
-        }else if (victoryMusic.isPlaying()) {
+        } else if (victoryMusic.isPlaying()) {
             victoryMusic.stop();
         }
         backgroundMusic.play();
@@ -200,12 +217,13 @@ noKeyAnimation = loadNoKeyAnimation();
      */
     public void goToGame() {
         if (backgroundMusic.isPlaying()) {
-            backgroundMusic.stop();}
-        else if (gameOverMusic.isPlaying()) {
+            backgroundMusic.stop();
+        } else if (gameOverMusic.isPlaying()) {
             gameOverMusic.stop();
         } else if (victoryMusic.isPlaying()) {
             gameOverMusic.stop();
-        }gameMusic.play();
+        }
+        gameMusic.play();
         gameMusic.setLooping(true);
 
         this.setScreen(new GameScreen(this)); // Set the current screen to GameScreen
@@ -214,12 +232,11 @@ noKeyAnimation = loadNoKeyAnimation();
             menuScreen = null;
         }
     }
+
     public void loadMaze(FileHandle fileHandle) {
         this.maze = new Maze(fileHandle);
         goToGame(); // Go to the game screen after loading the maze
     }
-
-
 
 
     public Animation<TextureRegion> getCharacterUpAnimation() {
@@ -250,6 +267,7 @@ noKeyAnimation = loadNoKeyAnimation();
         characterRightAnimation = createAnimation(walkSheet, 1, frameWidth, frameHeight, animationFrames);
         characterUpAnimation = createAnimation(walkSheet, 2, frameWidth, frameHeight, animationFrames);
     }
+
     /**
      * Loads the enemy animations from the mobs.png file.
      */
@@ -266,16 +284,18 @@ noKeyAnimation = loadNoKeyAnimation();
         enemyRightAnimation = createAnimation(walkSheet, 2, frameWidth, frameHeight, animationFrames);
         enemyUpAnimation = createAnimation(walkSheet, 3, frameWidth, frameHeight, animationFrames);
     }
+
     private void loadTextures() {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         Texture spriteSheet = new Texture(Gdx.files.internal("objects.png")); // Adjust path and coordinates
         Texture noKeytexture = new Texture(Gdx.files.internal("objects.png"));
         Texture keytexture = new Texture(Gdx.files.internal("objects.png"));
-        fullHeartTexture = new TextureRegion(spriteSheet, 64, 0,16, 16);
-        emptyHeartTexture = new TextureRegion(spriteSheet, 128, 0,16,16);
+        fullHeartTexture = new TextureRegion(spriteSheet, 64, 0, 16, 16);
+        emptyHeartTexture = new TextureRegion(spriteSheet, 128, 0, 16, 16);
 //        keyTexture = new TextureRegion(keytexture,0,64, 16, 16);
 //        noKeyTexture = new TextureRegion(noKeytexture,0,80, 16, 16);
     }
+
     /**
      * Creates an animation from a specific row of a sprite sheet.
      */
@@ -286,6 +306,7 @@ noKeyAnimation = loadNoKeyAnimation();
         }
         return new Animation<>(0.1f, frames);
     }
+
     protected Animation<TextureRegion> loadNoKeyAnimation() {
         Texture noKeySheet = new Texture(Gdx.files.internal("objects.png")); // Make sure this path is correct
 
@@ -302,8 +323,10 @@ noKeyAnimation = loadNoKeyAnimation();
             int x = (startCol + col) * frameWidth;
             int y = startRow * frameHeight;
 
-            noKeyFrames.add(new TextureRegion(noKeySheet, x, y, frameWidth, frameHeight));}
-        return new Animation<>(0.1f, noKeyFrames); }// Adjust the frame duration as needed
+            noKeyFrames.add(new TextureRegion(noKeySheet, x, y, frameWidth, frameHeight));
+        }
+        return new Animation<>(0.1f, noKeyFrames);
+    }// Adjust the frame duration as needed
 
 //    protected Animation<TextureRegion> loadKeyAnimation() {
 //        Texture keySheet = new Texture(Gdx.files.internal("objects.png")); // Make sure this path is correct
@@ -347,6 +370,7 @@ noKeyAnimation = loadNoKeyAnimation();
 
         return new Animation<>(0.1f, trapFrames); // Adjust the frame duration as needed
     }
+
     protected Animation<TextureRegion> loadKeyAnimation() {
         Texture keySheet = new Texture(Gdx.files.internal("objects.png")); // Make sure this path is correct
 
@@ -415,13 +439,29 @@ noKeyAnimation = loadNoKeyAnimation();
     public SpriteBatch getSpriteBatch() {
         return spriteBatch;
     }
+
     // Getters for each TextureRegion
-    public static TextureRegion getWallTextureRegion() { return wallTextureRegion; }
-    public static TextureRegion getEntryPointTextureRegion() { return entryPointTextureRegion; }
-    public static TextureRegion getExitTextureRegion() { return exitTextureRegion; }
+    public static TextureRegion getWallTextureRegion() {
+        return wallTextureRegion;
+    }
+
+    public static TextureRegion getEntryPointTextureRegion() {
+        return entryPointTextureRegion;
+    }
+
+    public static TextureRegion getExitTextureRegion() {
+        return exitTextureRegion;
+    }
+
     //public static TextureRegion getTrapTextureRegion() { return trapTextureRegion; }
-    public static TextureRegion getEnemyTextureRegion() { return enemyTextureRegion; }
-    public static TextureRegion getKeyTextureRegion() { return keyTextureRegion; }
+    public static TextureRegion getEnemyTextureRegion() {
+        return enemyTextureRegion;
+    }
+
+    public static TextureRegion getKeyTextureRegion() {
+        return keyTextureRegion;
+    }
+
     public static TextureRegion getFloorTextureRegion() {
         return floorTextureRegion;
     }
@@ -456,5 +496,90 @@ noKeyAnimation = loadNoKeyAnimation();
 
     public Animation<TextureRegion> getEnemyRightAnimation() {
         return enemyRightAnimation;
+    }
+
+    // Getter methods for the collectible textures
+    public TextureRegion getSwordTexture() {
+        return swordTextureRegion;
+    }
+
+    public TextureRegion getLifeTexture() {
+        return lifeTextureRegion;
+    }
+
+    public TextureRegion getShieldTexture() {
+        return shieldTextureRegion;
+    }
+
+    public MenuScreen getMenuScreen() {
+        return menuScreen;
+    }
+
+    public GameScreen getGameScreen() {
+        return gameScreen;
+    }
+
+    public Texture getMazeElementsTexture() {
+        return mazeElementsTexture;
+    }
+
+    public Texture getObstaclesTexture() {
+        return obstaclesTexture;
+    }
+
+    public Texture getMobsTexture() {
+        return mobsTexture;
+    }
+
+    public Animation<TextureRegion> getNoKeyAnimation() {
+        return noKeyAnimation;
+    }
+
+    public Animation<TextureRegion> getKeyAnimation() {
+        return keyAnimation;
+    }
+
+    public Music getBackgroundMusic() {
+        return backgroundMusic;
+    }
+
+    public Music getGameOverMusic() {
+        return gameOverMusic;
+    }
+
+    public Music getGameMusic() {
+        return gameMusic;
+    }
+
+    public Music getVictoryMusic() {
+        return victoryMusic;
+    }
+
+    public static TextureRegion getSwordTextureRegion() {
+        return swordTextureRegion;
+    }
+
+    public static TextureRegion getLifeTextureRegion() {
+        return lifeTextureRegion;
+    }
+
+    public static TextureRegion getShieldTextureRegion() {
+        return shieldTextureRegion;
+    }
+
+    public static TextureRegion getClosedChestTextureRegion() {
+        return closedChestTextureRegion;
+    }
+
+    public static TextureRegion getOpenChestTextureRegion() {
+        return openChestTextureRegion;
+    }
+
+    public Texture getChestTexture() {
+        return chestTexture;
+    }
+
+    public Texture getCollectiblesTexture() {
+        return collectiblesTexture;
     }
 }

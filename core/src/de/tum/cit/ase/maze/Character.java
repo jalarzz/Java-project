@@ -301,4 +301,8 @@ public class Character extends MazeElement implements Movable {
     public boolean isArmed() {
         return isArmed;
     }
+
+    public void setArmed(boolean armed) {
+        isArmed = armed;
+    }
 }

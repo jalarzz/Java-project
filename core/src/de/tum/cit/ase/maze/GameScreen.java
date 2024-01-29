@@ -20,7 +20,7 @@ public class GameScreen implements Screen {
     private final OrthographicCamera camera;
     private final BitmapFont font;
     private Maze maze;
-
+    private Array<Collectible> collectibles; // Array to manage collectibles
 
 
     private float sinusInput = 0f;
@@ -42,6 +42,7 @@ public class GameScreen implements Screen {
         this.maze = game.getMaze();
 
         this.mazeElements = new Array<>();
+        this.collectibles = new Array<>(); // Initialize the collectibles array
         this.loadMazeElements();
 
 
@@ -76,15 +77,10 @@ public class GameScreen implements Screen {
         initializePlayerCharacter();
 
 
-
-
-
-
     }
 
     //Load maze elements
     private void loadMazeElements() {
-        // Assuming Maze class provides the layout and methods to access it
         int[][] layout = game.getMaze().getLayout();
         for (int i = 0; i < layout.length; i++) {
             for (int j = 0; j < layout[i].length; j++) {
@@ -95,6 +91,7 @@ public class GameScreen implements Screen {
             }
         }
     }
+
     /**
      * Initializes the player character with animation and positions it at the entry point.
      */
@@ -174,6 +171,8 @@ public class GameScreen implements Screen {
             case 6: // Lava
                 Animation<TextureRegion> lavaAnimation = game.loadLavaAnimation();
                 return new Lava(lavaAnimation, x * tileSize, y * tileSize);
+            case 7: //Chest
+                return new Chest(MazeRunnerGame.getClosedChestTextureRegion(), MazeRunnerGame.getOpenChestTextureRegion(),x * tileSize, y * tileSize,game,this);
 
             default:
                 return null; // For undefined types, return null
@@ -207,52 +206,51 @@ public class GameScreen implements Screen {
         playerCharacter.update(Gdx.graphics.getDeltaTime());
 
         game.getSpriteBatch().setProjectionMatrix(camera.combined);
+        handleInput(delta);
+        updateCollectibles(delta);
 
 
         game.getSpriteBatch().begin(); // Important to call this before drawing anything
-
-
         for (int i = 0; i < game.getMaze().getLayout().length; i++) {
             for (int j = 0; j < game.getMaze().getLayout()[0].length; j++) {
-                int cell = game.getMaze().getLayout()[i][j];
-                if (cell != 0) {
-                    game.getSpriteBatch().draw(
-                            MazeRunnerGame.getFloorTextureRegion(),
-                            i * 16, j * 16
-                    );
-                }
+                game.getSpriteBatch().draw(
+                        MazeRunnerGame.getFloorTextureRegion(),
+                        i * 16,
+                        j * 16
+                );
             }
         }
 
         for (MazeElement element : mazeElements) {
             // Update and draw specific types of elements
-            if (element instanceof Enemy) {
-                Enemy enemy = (Enemy) element;
+            if (element instanceof Enemy enemy) {
                 enemy.update(delta);
                 enemy.draw(game.getSpriteBatch());} else
-            if (element instanceof Trap) {
-                Trap trap = (Trap) element;
+            if (element instanceof Trap trap) {
                 trap.update(Gdx.graphics.getDeltaTime());
                 trap.draw(game.getSpriteBatch());
-            } else if (element instanceof Lava) {
-                Lava lava = (Lava) element;
+            } else if (element instanceof Lava lava) {
                 lava.update(delta); // Update the lava animation
                 lava.draw(game.getSpriteBatch());
-            } else if (element instanceof Key && !playerCharacter.hasKey()) {
-                Key key = (Key) element;
+            } else if (element instanceof Key key && !playerCharacter.hasKey()) {
                 key.update(delta); // Update the key animation if the player doesn't have the key
                 key.draw(game.getSpriteBatch());
-            } else if (element instanceof Exit) {
-                Exit exit = (Exit) element;
+            } else if (element instanceof Exit exit) {
                 exit.draw(game.getSpriteBatch());
-            } else if (element instanceof Wall) {
-                Wall wall = (Wall) element;
+            } else if (element instanceof Wall wall) {
                 wall.draw(game.getSpriteBatch());
             }
             else if (element instanceof EntryPoint) {
                 EntryPoint entryPoint = (EntryPoint) element;
                 entryPoint.draw(game.getSpriteBatch());
             }
+            else if (element instanceof Chest) {
+                Chest chest = (Chest) element;
+                chest.draw(game.getSpriteBatch());
+            }
+        }
+        for (Collectible collectible : collectibles) {
+            collectible.draw(game.getSpriteBatch());
         }
 
         if (playerCharacter != null) {
@@ -272,13 +270,62 @@ public class GameScreen implements Screen {
         playerCharacter.updateStatus(game.getMaze(), mazeElements);
         hud.updateKey(Gdx.graphics.getDeltaTime(), playerCharacter.hasKey());
         hud.updateExit(playerCharacter.hasReachedExit());
-        playerCharacter.update(Gdx.graphics.getDeltaTime());
-        // Update character status based on current position in the maze
+        playerCharacter.update(Gdx.graphics.getDeltaTime());// Update character status based on current position in the maze
         // Check if player has reached the exit and has the key
-        if (playerCharacter.hasKey() && maze.checkCollision(playerCharacter.getBounds(), true) ==22 ) {
+        if (playerCharacter.hasKey() && maze.checkCollision(playerCharacter.getBounds(), true) ==7 ) {
             game.showVictoryScreen();
         }
-        hud.draw();}
+        hud.draw();
+    }
+
+    /**
+     * Handles user input for character movement and interactions.
+     *
+     * @param delta The time in seconds since the last update.
+     */
+    private void handleInput(float delta) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            for (MazeElement element : mazeElements) {
+                if (element instanceof Chest) {
+                    Chest chest = (Chest) element;
+                    // Log before attempting to open the chest
+                    Gdx.app.log("handleInput", "Attempting to open chest at position (" + chest.getX() + ", " + chest.getY() + ")");
+                    if (playerCharacter.getBounds().overlaps(chest.getBounds()) && !chest.isOpened()) {
+                        try {
+                            chest.open();
+                            // Log successful opening
+                            Gdx.app.log("handleInput", "Chest opened successfully.");
+                            break; // Assuming one interaction per key press
+                        } catch (Exception e) {
+                            // Log the exception with as much detail as possible
+                            Gdx.app.error("handleInput", "Error opening chest at (" + chest.getX() + ", " + chest.getY() + "): " + e.getMessage(), e);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Updates the state of collectibles, checking for collection and removing collected items.
+     *
+     * @param delta The time in seconds since the last update.
+     */
+    public void updateCollectibles(float delta) {
+        Array<Collectible> collected = new Array<>();
+        for (Collectible collectible : collectibles) {
+            if (playerCharacter.getBounds().overlaps(collectible.getBounds())) {
+                collected.add(collectible);
+                collectible.collect(); // Collect the collectible
+            }
+        }
+        collectibles.removeAll(collected, true); // Remove collected items from the array
+    }
+
+    public void addCollectible(Collectible collectible) {
+        this.collectibles.add(collectible);
+    }
 
     @Override
     public void resize(int width, int height) {
@@ -306,4 +353,39 @@ public class GameScreen implements Screen {
     public void dispose() {
     }
 
+    public MazeRunnerGame getGame() {
+        return game;
+    }
+
+    public OrthographicCamera getCamera() {
+        return camera;
+    }
+
+    public BitmapFont getFont() {
+        return font;
+    }
+
+    public Maze getMaze() {
+        return maze;
+    }
+
+    public Array<Collectible> getCollectibles() {
+        return collectibles;
+    }
+
+    public float getSinusInput() {
+        return sinusInput;
+    }
+
+    public Array<MazeElement> getMazeElements() {
+        return mazeElements;
+    }
+
+    public Character getPlayerCharacter() {
+        return playerCharacter;
+    }
+
+    public HUD getHud() {
+        return hud;
+    }
 }
