@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -15,10 +16,12 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserCallback;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserConfiguration;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserIntent;
+import org.w3c.dom.Text;
 
 public class VictoryScreen implements Screen {
     private final MazeRunnerGame game;
     private final Stage stage;
+    private Texture backgroundImage;
 
     public VictoryScreen(MazeRunnerGame game) {
         this.game = game;
@@ -29,9 +32,13 @@ public class VictoryScreen implements Screen {
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
+        // Align table's content to the top and add padding to push it down
+        table.top().padTop(600); // Adjust '50' to whatever value suits your layout
+        stage.addActor(table);
 
-        Label victoryLabel = new Label("Victory", game.getSkin(), "title");
-        table.add(victoryLabel).padBottom(80).row();
+        // Load the background image
+        backgroundImage = new Texture(Gdx.files.internal("victory.png"));
+
 
         //Select map
         TextButton SelectMap = new TextButton("Select map", game.getSkin());
@@ -78,7 +85,22 @@ public class VictoryScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clear the screen
+        // Convert RGB values to OpenGL's 0.0 to 1.0 range
+        float red = 40f / 255f;
+        float green = 38f / 255f;
+        float blue = 38f / 255f;
+        float alpha = 1f; // Fully opaque
+
+        // Clear the screen with the specified color
+        Gdx.gl.glClearColor(red, green, blue, alpha);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        // Ensure the spriteBatch is not already in use
+        if (!game.getSpriteBatch().isDrawing()) {
+            // Begin a new drawing session for the background
+            game.getSpriteBatch().begin();
+            game.getSpriteBatch().draw(backgroundImage, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            game.getSpriteBatch().end();
+        }
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
     }

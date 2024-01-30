@@ -214,7 +214,8 @@ public class MazeRunnerGame extends Game {
         }
         backgroundMusic.play();
         backgroundMusic.setLooping(true);
-        this.setScreen(new MenuScreen(this));// Set the current screen to MenuScreen
+        this.menuScreen = new MenuScreen(this);
+        this.setScreen(menuScreen);// Set the current screen to MenuScreen
         ;
        /* if (gameScreen != null) {
             gameScreen.dispose(); // Dispose the game screen if it exists
@@ -238,6 +239,7 @@ public class MazeRunnerGame extends Game {
         gameScreen = new GameScreen(this);
         this.setScreen(gameScreen); // Set the current screen to GameScreen
         Gdx.app.log("Debug", "gameScreen instantiated");
+        Gdx.app.log("Debug", menuScreen.toString());
         if (menuScreen != null) {
             menuScreen.dispose(); // Dispose the menu screen if it exists
             menuScreen = null;

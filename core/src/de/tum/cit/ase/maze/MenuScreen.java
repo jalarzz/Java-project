@@ -34,11 +34,16 @@ public class MenuScreen implements Screen {
      * @param game The main game class, used to access global resources and methods.
      */
     public MenuScreen(MazeRunnerGame game) {
+        this.game = game;
         var camera = new OrthographicCamera();
         camera.zoom = 1.5f; // Set camera zoom for a closer view
 
         Viewport viewport = new ScreenViewport(camera); // Create a viewport with the camera
         stage = new Stage(viewport, game.getSpriteBatch()); // Create a stage for UI elements
+
+        // Load the background image
+       backgroundImage = new Texture(Gdx.files.internal("runnert.png"));
+
 
         Table table = new Table(); // Create a table for layout
         table.setFillParent(true); // Make the table fill the stage
@@ -47,20 +52,11 @@ public class MenuScreen implements Screen {
 
 
 
+
         // Add a label as a title
-        table.add(new Label("Froggo & Capitalism", game.getSkin(), "title")).padBottom(80).row();
-/*
-        // Create and add a button to go to the game screen
-        TextButton goToGameButton = new TextButton("Go To Game", game.getSkin());
-        table.add(goToGameButton).width(300).row();
-        goToGameButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (game.getMaze() != null) {
-                    game.goToGame(); // Change to the game screen when button is pressed
-                }
-            }
-        });*/
+       // table.add(new Label("Froggo & Capitalism", game.getSkin(), "title")).padBottom(80).row();
+
+
         //Resume the Game
 
         TextButton continueButton = new TextButton("Continue", game.getSkin());
@@ -98,9 +94,10 @@ public class MenuScreen implements Screen {
                 game.getFileChooser().chooseFile(fileChooserConfig, new NativeFileChooserCallback() {
                     @Override
                     public void onFileChosen(FileHandle fileHandle) {
-                        // Do something with fileHandle
                         // Load the maze and switch to the game screen with the chosen maze file
+
                         game.loadMaze(fileHandle);
+                        game.setPaused(false);
                     }
 
                     @Override
@@ -128,8 +125,27 @@ public class MenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clear the screen
-        stage.draw(); // Draw the stage
+        /// Convert RGB values to OpenGL's 0.0 to 1.0 range
+        float red = 40f / 255f;
+        float green = 38f / 255f;
+        float blue = 38f / 255f;
+        float alpha = 1f; // Fully opaque
+
+        // Clear the screen with the specified color
+        Gdx.gl.glClearColor(red, green, blue, alpha);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        // Ensure the spriteBatch is not already in use
+        if (!game.getSpriteBatch().isDrawing()) {
+            // Begin a new drawing session for the background
+            game.getSpriteBatch().begin();
+            game.getSpriteBatch().draw(backgroundImage, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            game.getSpriteBatch().end();
+        }
+
+        // Now draw the stage
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        stage.draw();
     }
 
     @Override
