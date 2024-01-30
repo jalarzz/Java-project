@@ -29,7 +29,6 @@ public class Enemy extends MazeElement implements Movable {
 
 
 
-
     public Enemy(TextureRegion texture, int x, int y, Character player, Maze maze, Animation<TextureRegion>[] animations) {
         super(texture,x,y, TILE_SIZE, TILE_SIZE);
         this.currentState = EnemyState.PATROLLING;
@@ -39,6 +38,7 @@ public class Enemy extends MazeElement implements Movable {
         this.animations = animations;
         this.stateTime = 0f;
         this.pathfinder = new AStar(convertToNodes(maze.getLayout()));
+
 
     }
 
@@ -407,10 +407,6 @@ followPath(delta );
                     patrol(delta, maze);
                     break;
                 case CHASING:
-                    if (this.bounds.overlaps(player.getBounds())) {
-                        player.loseLife(); // Assuming player has a method to lose life
-                        Gdx.app.log("Collision", "Player and enemy collided. Player loses life.");
-                    }
                     chase(delta);
                     break;
         }}
@@ -497,7 +493,7 @@ followPath(delta );
             x += moveX;
             y += moveY;
 
-
+setPosition(x,y);
             // Calculate the direction based on the sign of diffX and diffY
             if (Math.abs(diffX) > Math.abs(diffY)) {
                 currentDirection = (diffX > 0) ? Direction.RIGHT : Direction.LEFT;

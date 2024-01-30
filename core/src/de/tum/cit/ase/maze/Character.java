@@ -132,6 +132,8 @@ public class Character extends MazeElement implements Movable {
         }
     }
 
+
+
     /**
      * Updates the character's position and bounding box.
      *
@@ -208,7 +210,7 @@ public class Character extends MazeElement implements Movable {
             for (MazeElement element : mazeElements) {
                 if (element instanceof Enemy) {
                     Enemy enemy = (Enemy) element;
-                    if (enemy.getBounds().overlaps(bounds)) {
+                    if (this.bounds.overlaps(enemy.getBounds())) {
                        // Gdx.app.log("updateStatus", "Collision with Enemy");
                         loseLife();
                         break;
