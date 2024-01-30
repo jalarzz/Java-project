@@ -5,25 +5,31 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.Gdx;
+
+import java.awt.*;
 
 public class HUD {
     private final Stage stage;
     private final Image[] hearts;
     private final Image keyImage;
-//    private final TextureRegion keyTexture;
-//    private final TextureRegion noKeyTexture;
+    public boolean messageOn = false;
+    public String message = "";
     float heartScaling = 2.0f;
     float keyScaling = 5f;
     private Animation<TextureRegion> keyAnimation;
     private Animation<TextureRegion> noKeyAnimation;
     private float stateTime = 0;
+    private Label messageLabel; // Add a Label for displaying messages
+
 
 
     public HUD(TextureRegion fullHeart, TextureRegion emptyHeart, Animation<TextureRegion> keyAnimation, Animation<TextureRegion> noKeyAnimation, int initialLives) {
@@ -60,7 +66,26 @@ public class HUD {
         leftTable.setFillParent(true);
         rightTable.setFillParent(true);
 
+        //Stuff for message
+        // Initialize the message Label
+        Label.LabelStyle labelStyle = new Label.LabelStyle(new BitmapFont(), Color.WHITE);
+        messageLabel = new Label("", labelStyle);
+        messageLabel.setFontScale(2.0f); // Adjust the scale as needed
+        messageLabel.setPosition(Gdx.graphics.getWidth() / 8f, Gdx.graphics.getHeight() * 0.9f); // Position the label on the screen
+        messageLabel.setAlignment(Align.center); // Center the text
+        stage.addActor(messageLabel); // Add the label to the stage
 
+
+
+    }
+
+    public void showMessage(String messageText) {
+        messageLabel.setText(messageText); // Set the text of the message
+        messageLabel.setVisible(true); // Make the label visible
+
+        // Schedule hiding the message after a few seconds
+        float delay = 3; // delay in seconds before the message disappears
+        messageLabel.addAction(Actions.sequence(Actions.delay(delay), Actions.fadeOut(0.5f), Actions.run(() -> messageLabel.setVisible(false))));
     }
 
 

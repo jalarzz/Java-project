@@ -121,31 +121,27 @@ public class MazeRunnerGame extends Game {
 
         // Load the sprite sheet
         mazeElementsTexture = new Texture(Gdx.files.internal("basictiles-shee.salomet.png"));
-        obstaclesTexture = new Texture(Gdx.files.internal("objects.png"));
+        obstaclesTexture = new Texture(Gdx.files.internal("objects.OwOt.png"));
         mobsTexture = new Texture(Gdx.files.internal("mobs-sheet.salome.png"));//Enemy design by Salome Tsitskishvili
         chestTexture = new Texture(Gdx.files.internal("things.png"));
-        collectiblesTexture = new Texture(Gdx.files.internal("pixel_icons_by_oceansdream.png"));
+        collectiblesTexture = new Texture(Gdx.files.internal("objects.OwOt.png"));
 
 
         // Initialize TextureRegions for each element
-        // Adjust the coordinates (x, y) and dimensions (width, height) as per your sprite sheet layout
         wallTextureRegion = new TextureRegion(mazeElementsTexture, 0, 32, 16, 16);
         entryPointTextureRegion = new TextureRegion(mazeElementsTexture, 64, 16, 16, 16);
         exitTextureRegion = new TextureRegion(mazeElementsTexture, 0, 96, 16, 16);
-        //trapTextureRegion = new TextureRegion(obstaclesTexture, 96, 42, 22, 22);
-        //enemyTextureRegion = new TextureRegion(mobsTexture, 144, 0, 16, 16);
-        //keyTextureRegion = new TextureRegion(mazeElementsTexture, 64, 64, 16, 16);
         floorTextureRegion = new TextureRegion(mazeElementsTexture, 0, 16, 16, 16);
 
         keyAnimation = loadKeyAnimation();
         noKeyAnimation = loadNoKeyAnimation();
 
         //Initialize collectibles textures:
-        swordTextureRegion = new TextureRegion(collectiblesTexture, 16, 0, 16, 16); // Example path
-        lifeTextureRegion = new TextureRegion(collectiblesTexture, 48, 0, 16, 16); // Example path
-        shieldTextureRegion = new TextureRegion(collectiblesTexture, 16, 16, 16, 16); // Example path
+        swordTextureRegion = new TextureRegion(collectiblesTexture, 32, 0, 16, 16); // Example path
+        lifeTextureRegion = new TextureRegion(collectiblesTexture, 0, 0, 16, 16); // Example path
+        shieldTextureRegion = new TextureRegion(collectiblesTexture, 16, 0, 16, 16); // Example path
 
-        //Initialize chest tectures:
+        //Initialize chest textures:
         closedChestTextureRegion = new TextureRegion(chestTexture, 96, 0, 16, 16);
         openChestTextureRegion = new TextureRegion(chestTexture, 128, 48, 16, 16);
 
@@ -226,12 +222,7 @@ public class MazeRunnerGame extends Game {
         }
         gameMusic.play();
         gameMusic.setLooping(true);
-        if (gameScreen == null) {
-            gameScreen = new GameScreen(this);
-            Gdx.app.log("Debug", "gameScreen instantiated");
-        } else {
-            Gdx.app.log("Debug", "gameScreen already exists, not null");
-        }
+        gameScreen = new GameScreen(this);
         this.setScreen(gameScreen); // Set the current screen to GameScreen
         Gdx.app.log("Debug", "gameScreen instantiated");
         if (menuScreen != null) {
@@ -347,13 +338,13 @@ public class MazeRunnerGame extends Game {
     }
 
     protected Animation<TextureRegion> loadNoKeyAnimation() {
-        Texture noKeySheet = new Texture(Gdx.files.internal("objects.png")); // Make sure this path is correct
+        Texture noKeySheet = new Texture(Gdx.files.internal("objects.OwOt.png")); // Make sure this path is correct
 
         int frameWidth = 16; // Make sure these dimensions match your sprite sheet
         int frameHeight = 16;
         int animationFrames = 4; // Ensure you have 9 frames in the sprite sheet
-        int startCol = 8; // Starting column for trap animation frames (adjust as needed)
-        int startRow = 8; // Starting row for trap animation frames (adjust as needed)
+        int startCol = 0; // Starting column for trap animation frames (adjust as needed)
+        int startRow = 1; // Starting row for trap animation frames (adjust as needed)
 
         Array<TextureRegion> noKeyFrames = new Array<>(TextureRegion.class);
 
@@ -392,13 +383,13 @@ public class MazeRunnerGame extends Game {
     }
 
     protected Animation<TextureRegion> loadKeyAnimation() {
-        Texture keySheet = new Texture(Gdx.files.internal("objects.png")); // Make sure this path is correct
+        Texture keySheet = new Texture(Gdx.files.internal("objects.OwOt.png"));
 
-        int frameWidth = 16; // Make sure these dimensions match your sprite sheet
+        int frameWidth = 16;
         int frameHeight = 16;
-        int animationFrames = 4; // Ensure you have 9 frames in the sprite sheet
-        int startCol = 0; // Starting column for trap animation frames (adjust as needed)
-        int startRow = 4; // Starting row for trap animation frames (adjust as needed)
+        int animationFrames = 4;
+        int startCol = 0;
+        int startRow = 4;
 
         Array<TextureRegion> keyFrames = new Array<>(TextureRegion.class);
 

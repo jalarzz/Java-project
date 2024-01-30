@@ -47,15 +47,15 @@ public class Chest extends MazeElement {
         Random rand = new Random();
         Collectible collectible;
 
-        switch (rand.nextInt(3)) { // Assuming 3 types of collectibles for simplicity
+        switch (rand.nextInt(3)) {
             case 0:
-                collectible = new Sword(game.getSwordTexture(), this.x, this.y-16, gameScreen.getPlayerCharacter() );
+                collectible = new Sword(game.getSwordTexture(), this.x, this.y-16, gameScreen.getPlayerCharacter(), gameScreen.getHud());
                 break;
             case 1:
-                collectible = new Life(game.getLifeTexture(), this.x, this.y-16, gameScreen.getPlayerCharacter());
+                collectible = new Life(game.getLifeTexture(), this.x, this.y-16, gameScreen.getPlayerCharacter(),gameScreen.getHud());
                 break;
             case 2:
-                collectible = new Shield(game.getShieldTexture(), this.x, this.y-16);
+                collectible = new Shield(game.getShieldTexture(), this.x, this.y-16, gameScreen.getHud());
                 break;
             default:
                 return; // In case of an unexpected value

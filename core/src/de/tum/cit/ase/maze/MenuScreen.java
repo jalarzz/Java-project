@@ -48,8 +48,8 @@ public class MenuScreen implements Screen {
 
 
         // Add a label as a title
-        table.add(new Label("Maze Runner", game.getSkin(), "title")).padBottom(80).row();
-
+        table.add(new Label("Froggo & Capitalism", game.getSkin(), "title")).padBottom(80).row();
+/*
         // Create and add a button to go to the game screen
         TextButton goToGameButton = new TextButton("Go To Game", game.getSkin());
         table.add(goToGameButton).width(300).row();
@@ -60,7 +60,7 @@ public class MenuScreen implements Screen {
                     game.goToGame(); // Change to the game screen when button is pressed
                 }
             }
-        });
+        });*/
         //Resume the Game
 
         TextButton continueButton = new TextButton("Continue", game.getSkin());
