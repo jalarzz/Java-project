@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import java.util.Iterator;
+
 /**
  * The GameScreen class is responsible for rendering the gameplay screen.
  * It handles the game logic and rendering of the game elements.
@@ -144,6 +146,7 @@ public class GameScreen implements Screen {
                 game.getEnemyRightAnimation(),
                 game.getEnemyUpAnimation()
         };
+        Animation<TextureRegion> deathAnimation = game.loadEnemyDeathAnimation();
 
         switch (type) {
             case -1: // Floor
@@ -164,7 +167,7 @@ public class GameScreen implements Screen {
 
             case 4: // Enemy (dynamic obstacle)
 
-                return new Enemy(MazeRunnerGame.getEnemyTextureRegion(),x * tileSize, y * tileSize,playerCharacter,maze,enemyAnimations);
+                return new Enemy(MazeRunnerGame.getEnemyTextureRegion(),x * tileSize, y * tileSize,playerCharacter,maze,enemyAnimations,deathAnimation);
 
             case 5: // Key
                 Animation<TextureRegion> keyAnimation = game.loadKeyAnimation();
@@ -284,6 +287,7 @@ public class GameScreen implements Screen {
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything
         hud.updateHearts(playerCharacter.getLives(), game.getFullHeartTexture(), game.getEmptyHeartTexture());
+        hud.updateInvincibilityTimer(playerCharacter.getInvulnerabilityTimer());
         if (playerCharacter.getLives() <= 0) {
             game.showGameOverScreen();
         }
@@ -327,6 +331,26 @@ public class GameScreen implements Screen {
             }
         }
     }
+    /**
+     * Takes out the dead enemies.
+     * @param delta The time in seconds since the last update.
+     */
+    public void updatEnemies(float delta){
+        // Temporary list to hold enemies that are ready to be removed
+        Array<MazeElement> elementsToRemove = new Array<>();
+
+        for (MazeElement element : mazeElements) {
+            if (element instanceof Enemy) {
+                Enemy enemy = (Enemy) element;
+                enemy.update(delta);
+                if (enemy.isReadyToRemove()) {
+                    elementsToRemove.add(enemy); // Mark the enemy for removal
+                }
+            }
+            }
+            mazeElements.removeAll(elementsToRemove, true);
+
+        }
 
 
     /**

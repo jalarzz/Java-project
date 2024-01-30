@@ -37,7 +37,6 @@ public class Character extends MazeElement implements Movable {
 
 
 
-
     /**
      * Constructor for the Character class.
      *
@@ -113,6 +112,7 @@ public class Character extends MazeElement implements Movable {
                 setPosition(newX, newY);
                 camera.position.set(bounds.x, bounds.y, camera.position.z);
                 break;
+
             case 5: // Key
                 setHasKey(true);
                 if (!keySoundPlayed) {
@@ -178,7 +178,7 @@ public class Character extends MazeElement implements Movable {
             // Use the animation corresponding to the current direction
             currentFrame = animations[currentDirection.ordinal()].getKeyFrame(stateTime/3, true);
         } else {
-            // When not moving, show the first frame of the down animation
+            // When not moving, show the first frame of the right animation
             currentFrame = animations[Direction.RIGHT.ordinal()].getKeyFrame(0, false);
         }
 
@@ -212,7 +212,12 @@ public class Character extends MazeElement implements Movable {
                     Enemy enemy = (Enemy) element;
                     if (this.bounds.overlaps(enemy.getBounds())) {
                        // Gdx.app.log("updateStatus", "Collision with Enemy");
-                        loseLife();
+                        if(this.isArmed){
+                            enemy.die();
+                        }
+                        else {
+                            loseLife();
+                        }
                         break;
                     }
                 }
@@ -227,8 +232,8 @@ public class Character extends MazeElement implements Movable {
     protected void loseLife() {
         if (invulnerabilityTimer <= 0) {
             lives--;
-          loseLife.play();
-            invulnerabilityTimer = INVULNERABILITY_TIME;
+            loseLife.play();
+            extendInvulnerability(INVULNERABILITY_TIME);
             if (lives <= 0) {
 
             }
@@ -237,6 +242,17 @@ public class Character extends MazeElement implements Movable {
 
 
     }
+    /**
+     * Extends the character's invulnerability period.
+     * This method is called when the character collects a shield or loses a life.
+     *
+     * @param duration The duration to extend the invulnerability period by, in seconds.
+     */
+    public void extendInvulnerability(float duration) {
+        // Extend the invulnerability period by the specified duration
+        invulnerabilityTimer = Math.max(invulnerabilityTimer, duration);
+    }
+
 
     // Getters and setters
 

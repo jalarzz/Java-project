@@ -14,9 +14,13 @@ public class Life extends Collectible {
     @Override
     protected void applyEffect() {
         //increase player's lives
-        playerCharacter.setLives(playerCharacter.getLives()+1);
-        hud.showMessage("One more life. Good for you!");
-
+        if(playerCharacter.getLives()<5) {
+            playerCharacter.setLives(playerCharacter.getLives() + 1);
+            hud.showMessage("+1 Life. Nice!");
+        }
+        else {
+            hud.showMessage("No more than 5 lives!");
+        }
         System.out.println("Life collected: Player's lives increased.");
     }
 }

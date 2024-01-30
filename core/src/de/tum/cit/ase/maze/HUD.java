@@ -27,6 +27,8 @@ public class HUD {
     private Animation<TextureRegion> noKeyAnimation;
     private float stateTime = 0;
     private Label messageLabel; // Add a Label for displaying messages
+    private Label invincibilityLabel; // Label for displaying invincibility countdown
+
 
 
 
@@ -73,6 +75,14 @@ public class HUD {
         stage.addActor(messageLabel); // Add the label to the stage
 
 
+        // Initialize the invincibility countdown label
+        invincibilityLabel = new Label("", labelStyle);
+        invincibilityLabel.setFontScale(1.5f);
+        invincibilityLabel.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() * 0.85f);
+        invincibilityLabel.setAlignment(Align.center);
+        stage.addActor(invincibilityLabel);
+
+
 
     }
 
@@ -84,6 +94,19 @@ public class HUD {
         float delay = 3; // delay in seconds before the message disappears
         messageLabel.addAction(Actions.sequence(Actions.delay(delay), Actions.fadeOut(0.5f), Actions.run(() -> messageLabel.setVisible(false))));
     }
+    /**
+     * Updates the HUD with the current invincibility timer.
+     * @param invincibilityTime Remaining time of invincibility in seconds.
+     */
+    public void updateInvincibilityTimer(float invincibilityTime) {
+        if (invincibilityTime > 0) {
+            invincibilityLabel.setText(String.format("Invincible: %.1f", invincibilityTime));
+            invincibilityLabel.setVisible(true);
+        } else {
+            invincibilityLabel.setVisible(false);
+        }
+    }
+
 
 
     public void updateHearts(int currentLives, TextureRegion fullHeart, TextureRegion emptyHeart) {
@@ -104,7 +127,7 @@ public class HUD {
             Label exitLabel = new Label("Exit reached", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
             exitLabel.setFontScale(2.0f);
             stage.addActor(exitLabel);
-            exitLabel.setPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
+            exitLabel.setPosition(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f);
         }
     }
 
