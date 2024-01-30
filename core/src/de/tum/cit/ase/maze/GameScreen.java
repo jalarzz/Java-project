@@ -29,7 +29,7 @@ public class GameScreen implements Screen {
     private Character playerCharacter; // The player-controlled character
 
     private HUD hud;
-    private boolean isPaused = false;
+
 
 
 
@@ -181,13 +181,33 @@ public class GameScreen implements Screen {
     }
 
 
+
+
     // Screen interface methods with necessary functionality
     @Override
     public void render(float delta) {
         // Check for escape key press to go back to the menu
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            game.goToMenu();
+            game.setPaused(true);
+            Gdx.app.log("GameScreen", "Game paused state: " + game.isPaused);
+            if(game.getGameScreen() == null) {
+                Gdx.app.log("beforeMenu", "game.gameScreen is null");
+            } else {
+                Gdx.app.log("beforeMennu", "game.gameScreen is not null");
+            }
         }
+            if(game.isPaused){
+                Gdx.app.log("goToMenu", "Game paused state: " + game.isPaused);
+                if(game.getGameScreen() == null) {
+                    Gdx.app.log("goingToMenu", "game.gameScreen is null");
+                } else {
+                    Gdx.app.log("gointToMenu", "game.gameScreen is not null");
+                }
+                game.goToMenu();
+
+            }
+
+        if(!game.isPaused) {
 
         ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
 
@@ -277,6 +297,7 @@ public class GameScreen implements Screen {
             game.showVictoryScreen();
         }
         hud.draw();
+        }
     }
 
     /**
@@ -335,12 +356,10 @@ public class GameScreen implements Screen {
 
     @Override
     public void pause() {
-        isPaused = true;
     }
 
     @Override
     public void resume() {
-        isPaused = false;
     }
 
     @Override

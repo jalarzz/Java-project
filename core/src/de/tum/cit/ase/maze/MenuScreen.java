@@ -56,7 +56,32 @@ public class MenuScreen implements Screen {
         goToGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.goToGame(); // Change to the game screen when button is pressed
+                if (game.getMaze() != null) {
+                    game.goToGame(); // Change to the game screen when button is pressed
+                }
+            }
+        });
+        //Resume the Game
+
+        TextButton continueButton = new TextButton("Continue", game.getSkin());
+        table.add(continueButton).width(300).row();
+        continueButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (game.isPaused()) {
+                    Gdx.app.log("MenuScreen", "Continue button clicked.");
+                    game.setPaused(false); // Unpause the game
+                    Gdx.app.log("MazeRunnerGame", "Game paused state: " + game.isPaused);
+                    if(!game.isPaused){
+                        Gdx.app.log("resume", "Game paused state: " + game.isPaused);
+                        if(game.getGameScreen() == null) {
+                            Gdx.app.log("Debug", "game.gameScreen is null");
+                        } else {
+                            Gdx.app.log("Debug", "game.gameScreen is not null");
+                        }
+                        game.resumeGame(); // Switch back to GameScreen//
+                         }
+                }
             }
         });
         //Select map

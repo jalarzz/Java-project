@@ -67,6 +67,7 @@ public class MazeRunnerGame extends Game {
     private static TextureRegion openChestTextureRegion;
     private Texture chestTexture;
     private Texture collectiblesTexture;
+    protected boolean isPaused = false;
 
     public Maze getMaze() {
         return maze;
@@ -206,10 +207,10 @@ public class MazeRunnerGame extends Game {
         backgroundMusic.setLooping(true);
         this.setScreen(new MenuScreen(this));// Set the current screen to MenuScreen
         ;
-        if (gameScreen != null) {
+       /* if (gameScreen != null) {
             gameScreen.dispose(); // Dispose the game screen if it exists
             gameScreen = null;
-        }
+        }*/
     }
 
     /**
@@ -225,17 +226,55 @@ public class MazeRunnerGame extends Game {
         }
         gameMusic.play();
         gameMusic.setLooping(true);
+        if (gameScreen == null) {
+            gameScreen = new GameScreen(this);
+            Gdx.app.log("Debug", "gameScreen instantiated");
+        } else {
+            Gdx.app.log("Debug", "gameScreen already exists, not null");
+        }
+        this.setScreen(gameScreen); // Set the current screen to GameScreen
+        Gdx.app.log("Debug", "gameScreen instantiated");
+        if (menuScreen != null) {
+            menuScreen.dispose(); // Dispose the menu screen if it exists
+            menuScreen = null;
+        }
+    }
+    /**
+     * Switches to the game screen.
+     */
+    public void resumeGame() {
+        if (backgroundMusic.isPlaying()) {
+            backgroundMusic.stop();
+        } else if (gameOverMusic.isPlaying()) {
+            gameOverMusic.stop();
+        } else if (victoryMusic.isPlaying()) {
+            gameOverMusic.stop();
+        }
+        gameMusic.play();
+        gameMusic.setLooping(true);
 
-        this.setScreen(new GameScreen(this)); // Set the current screen to GameScreen
+        this.setScreen(gameScreen); // Set the current screen to GameScreen
         if (menuScreen != null) {
             menuScreen.dispose(); // Dispose the menu screen if it exists
             menuScreen = null;
         }
     }
 
+
     public void loadMaze(FileHandle fileHandle) {
         this.maze = new Maze(fileHandle);
         goToGame(); // Go to the game screen after loading the maze
+        if(this.gameScreen == null) {
+            Gdx.app.log("loadMaze", "game.gameScreen is null");
+        } else {
+            Gdx.app.log("loadMaze", "game.gameScreen is not null");
+        }
+    }
+
+
+    // Method to set the GameScreen
+    public void setGameScreen(GameScreen gameScreen) {
+        this.gameScreen = gameScreen;
     }
 
 
@@ -326,26 +365,7 @@ public class MazeRunnerGame extends Game {
             noKeyFrames.add(new TextureRegion(noKeySheet, x, y, frameWidth, frameHeight));
         }
         return new Animation<>(0.1f, noKeyFrames);
-    }// Adjust the frame duration as needed
-
-//    protected Animation<TextureRegion> loadKeyAnimation() {
-//        Texture keySheet = new Texture(Gdx.files.internal("objects.png")); // Make sure this path is correct
-//
-//        int frameWidth = 16; // Make sure these dimensions match your sprite sheet
-//        int frameHeight = 16;
-//        int animationFrames = 4; // Ensure you have 9 frames in the sprite sheet
-//        int startCol = 0; // Starting column for trap animation frames (adjust as needed)
-//        int startRow = 4; // Starting row for trap animation frames (adjust as needed)
-//
-//        Array<TextureRegion> keyFrames = new Array<>(TextureRegion.class);
-//
-//        for (int col = 0; col < animationFrames; col++) {
-//            // Calculate the x and y position for each frame in the sprite sheet
-//            int x = (startCol + col) * frameWidth;
-//            int y = startRow * frameHeight;
-//
-//            keyFrames.add(new TextureRegion(keySheet, x, y, frameWidth, frameHeight));}
-//        return new Animation<>(0.1f, keyFrames); }// Adjust the frame duration as needed
+    }
 
     protected Animation<TextureRegion> loadTrapAnimation() {
         Texture trapSheet = new Texture(Gdx.files.internal("objects.png")); // Adjust the file name as needed
@@ -581,5 +601,12 @@ public class MazeRunnerGame extends Game {
 
     public Texture getCollectiblesTexture() {
         return collectiblesTexture;
+    }
+    public void setPaused(boolean paused) {
+        isPaused = paused;
+    }
+
+    public boolean isPaused() {
+        return isPaused;
     }
 }
