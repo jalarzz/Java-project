@@ -21,8 +21,6 @@ public class HUD {
     private final Stage stage;
     private final Image[] hearts;
     private final Image keyImage;
-    public boolean messageOn = false;
-    public String message = "";
     float heartScaling = 2.0f;
     float keyScaling = 5f;
     private Animation<TextureRegion> keyAnimation;
@@ -33,7 +31,6 @@ public class HUD {
 
 
     public HUD(TextureRegion fullHeart, TextureRegion emptyHeart, Animation<TextureRegion> keyAnimation, Animation<TextureRegion> noKeyAnimation, int initialLives) {
-        // ... existing initialization code ...
 
         this.keyAnimation = keyAnimation;
         this.noKeyAnimation = noKeyAnimation;
