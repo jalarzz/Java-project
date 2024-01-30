@@ -89,7 +89,7 @@ public class Enemy extends MazeElement implements Movable {
         this.maze = maze;
         this.animations = animations;
         this.stateTime = 0f;
-        // player is not set yet, will be set later
+
     }
 
     // Method to set the player character
@@ -180,19 +180,19 @@ public class Enemy extends MazeElement implements Movable {
 
         int tileType = maze.getElementAt(gridX, gridY);
         return tileType ==0; // Collision with a wall if the tile type is 1 (assuming 1 represents a wall)
-    } private boolean isCollisionWithTrap(float x, float y, Maze maze) {
-        // Check for collision with walls in the maze
-        // Assuming that the maze provides a method to check for wall collision
-        // You might need to adjust this based on your maze's implementation
-        return maze.checkCollision(new Rectangle(x, y, TILE_SIZE, TILE_SIZE), true) == 3;
-}
+    }
+
     private void chase(float delta) {
         if (pathNeedsUpdate()) {
-            // Recalculate the path towards the player
-            currentPath = pathfinder.findPath((int)x, (int)y, (int)player.getX(), (int)player.getY());
+            int enemyGridX = (int) (x / TILE_SIZE);
+            int enemyGridY = (int) (y / TILE_SIZE);
+            int playerGridX = (int) (player.getX() / TILE_SIZE);
+            int playerGridY = (int) (player.getY() / TILE_SIZE);
+
+            currentPath = pathfinder.findPath(enemyGridX, enemyGridY, playerGridX, playerGridY);
             pathIndex = 0;
         }
-        followPath();
+        followPath(); // Pass 'delta' here
     }
 
     private void flee(float delta) {
@@ -268,19 +268,25 @@ public class Enemy extends MazeElement implements Movable {
 
 
     /**
-     * Checks if the player character has entered the enemy's patrolling grid.
+     * Checks if the player character has entered a 3x3 grid area centered around the enemy.
+     * The method calculates the bounds of this grid based on the enemy's current position
+     * and checks if the player's bounding box overlaps with these bounds.
      *
-     * @param gridMinX The minimum X-coordinate of the grid.
-     * @param gridMaxX The maximum X-coordinate of the grid.
-     * @param gridMinY The minimum Y-coordinate of the grid.
-     * @param gridMaxY The maximum Y-coordinate of the grid.
      * @return true if the player character is within the grid, false otherwise.
      */
-    private boolean playerEntersGrid(int gridMinX, int gridMaxX, int gridMinY, int gridMaxY) {
-        Rectangle playerBounds = player.getBounds(); // Method to get player's bounding box
+    private boolean playerEntersGrid() {
+        float gridMinX = x - TILE_SIZE;
+        float gridMaxX = x + TILE_SIZE;
+        float gridMinY = y - TILE_SIZE;
+        float gridMaxY = y + TILE_SIZE;
 
-        // Check if any part of the player's bounds is within the grid
-        return playerBounds.overlaps(new Rectangle(gridMinX, gridMinY, gridMaxX - gridMinX, gridMaxY - gridMinY));
+        Rectangle playerBounds = player.getBounds(); // Player's bounding box
+
+        // Create a rectangle representing the 3x3 grid around the enemy
+        Rectangle gridBounds = new Rectangle(gridMinX, gridMinY, gridMaxX - gridMinX, gridMaxY - gridMinY);
+
+        // Check if the player's bounds overlap with the grid
+        return playerBounds.overlaps(gridBounds);
     }
 
     /**
@@ -372,7 +378,11 @@ public class Enemy extends MazeElement implements Movable {
 
         switch (currentState) {
             case PATROLLING:
-                patrol(delta, maze);
+                if (playerEntersGrid()) {
+                    currentState = EnemyState.CHASING;
+                } else {
+                    patrol(delta, maze);
+                }
                 break;
             case CHASING:
                 chase(delta);
@@ -401,32 +411,37 @@ public class Enemy extends MazeElement implements Movable {
     private void followPath() {
         if (currentPath != null && pathIndex < currentPath.size()) {
             Node nextNode = currentPath.get(pathIndex);
-            moveTowards(nextNode.x, nextNode.y);
-            if (reachedNode(nextNode)) {
+            // Convert grid coordinates to world coordinates
+            int targetX = nextNode.x * TILE_SIZE;
+           int targetY = nextNode.y * TILE_SIZE;
+            moveTowards(targetX, targetY, Gdx.graphics.getDeltaTime());
+            if (reachedNode(targetX, targetY)) {
                 pathIndex++;
             }
         }
     }
-    private void moveTowards(int targetX, int targetY) {
+    private boolean reachedNode(float targetX, float targetY) {
+        return distanceSquared(x, y, targetX, targetY) < REACHED_NODE_TOLERANCE;
+    }
+    // Modify the moveTowards method to accept 'delta' as a parameter
+    private void moveTowards(float targetX, float targetY, float delta) {
         float diffX = targetX - x;
         float diffY = targetY - y;
         float magnitude = (float) Math.sqrt(diffX * diffX + diffY * diffY);
 
-        // Calculate movement without multiplying by delta since it's already in your chase and flee methods
-        float moveX = speed * (diffX / magnitude);
-        float moveY = speed * (diffY / magnitude);
+        if (magnitude > 0) {
+            float moveX = speed * delta * (diffX / magnitude);
+            float moveY = speed * delta * (diffY / magnitude);
 
-        x += moveX;
-        y += moveY;
+            x += moveX;
+            y += moveY;
 
-        if (Math.abs(moveX) > Math.abs(moveY)) {
-            currentDirection = moveX > 0 ? Direction.RIGHT : Direction.LEFT;
-        } else {
-            currentDirection = moveY > 0 ? Direction.UP : Direction.DOWN;
+            if (Math.abs(moveX) > Math.abs(moveY)) {
+                currentDirection = moveX > 0 ? Direction.RIGHT : Direction.LEFT;
+            } else {
+                currentDirection = moveY > 0 ? Direction.UP : Direction.DOWN;
+            }
         }
-    }
-    private boolean reachedNode(Node node) {
-        return distanceSquared(x, y, node.x * TILE_SIZE, node.y * TILE_SIZE) < REACHED_NODE_TOLERANCE;
     }
 
     private float distanceSquared(float x1, float y1, float x2, float y2) {

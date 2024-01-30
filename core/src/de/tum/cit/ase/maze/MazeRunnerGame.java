@@ -119,7 +119,7 @@ public class MazeRunnerGame extends Game {
         this.loadEnemyAnimations(); // Load enemy animations
 
         // Load the sprite sheet
-        mazeElementsTexture = new Texture(Gdx.files.internal("basictiles.png"));
+        mazeElementsTexture = new Texture(Gdx.files.internal("basictiles-shee.salomet.png"));
         obstaclesTexture = new Texture(Gdx.files.internal("objects.png"));
         mobsTexture = new Texture(Gdx.files.internal("mobs-sheet.salome.png"));//Enemy design by Salome Tsitskishvili
         chestTexture = new Texture(Gdx.files.internal("things.png"));
@@ -128,11 +128,11 @@ public class MazeRunnerGame extends Game {
 
         // Initialize TextureRegions for each element
         // Adjust the coordinates (x, y) and dimensions (width, height) as per your sprite sheet layout
-        wallTextureRegion = new TextureRegion(mazeElementsTexture, 0, 0, 16, 16);
-        entryPointTextureRegion = new TextureRegion(mazeElementsTexture, 16, 0, 16, 16);
+        wallTextureRegion = new TextureRegion(mazeElementsTexture, 0, 32, 16, 16);
+        entryPointTextureRegion = new TextureRegion(mazeElementsTexture, 64, 16, 16, 16);
         exitTextureRegion = new TextureRegion(mazeElementsTexture, 0, 96, 16, 16);
         //trapTextureRegion = new TextureRegion(obstaclesTexture, 96, 42, 22, 22);
-        enemyTextureRegion = new TextureRegion(mobsTexture, 144, 0, 16, 16);
+        //enemyTextureRegion = new TextureRegion(mobsTexture, 144, 0, 16, 16);
         //keyTextureRegion = new TextureRegion(mazeElementsTexture, 64, 64, 16, 16);
         floorTextureRegion = new TextureRegion(mazeElementsTexture, 0, 16, 16, 16);
 
@@ -221,7 +221,7 @@ public class MazeRunnerGame extends Game {
         } else if (gameOverMusic.isPlaying()) {
             gameOverMusic.stop();
         } else if (victoryMusic.isPlaying()) {
-            gameOverMusic.stop();
+            victoryMusic.stop();
         }
         gameMusic.play();
         gameMusic.setLooping(true);
@@ -255,7 +255,7 @@ public class MazeRunnerGame extends Game {
      * Loads the character animations from the character.png file.
      */
     private void loadCharacterAnimations() {
-        Texture walkSheet = new Texture(Gdx.files.internal("character.png"));
+        Texture walkSheet = new Texture(Gdx.files.internal("character.salome-sheet.png"));
 
         int frameWidth = 16;
         int frameHeight = 32;
@@ -313,8 +313,8 @@ public class MazeRunnerGame extends Game {
         int frameWidth = 16; // Make sure these dimensions match your sprite sheet
         int frameHeight = 16;
         int animationFrames = 4; // Ensure you have 9 frames in the sprite sheet
-        int startCol = 0; // Starting column for trap animation frames (adjust as needed)
-        int startRow = 5; // Starting row for trap animation frames (adjust as needed)
+        int startCol = 8; // Starting column for trap animation frames (adjust as needed)
+        int startRow = 8; // Starting row for trap animation frames (adjust as needed)
 
         Array<TextureRegion> noKeyFrames = new Array<>(TextureRegion.class);
 

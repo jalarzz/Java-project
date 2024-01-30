@@ -52,7 +52,7 @@ public class HUD {
         rightTable.top().right();
         keyImage = new Image(noKeyAnimation.getKeyFrame(0)); // Initialize with the first frame of no key animation
         keyImage.setScale(keyScaling);
-        rightTable.add(keyImage).pad(50, 0, 0, 50);
+        rightTable.add(keyImage).pad(60, 0, 0, 60);
 
         // Add both tables to the stage
         stage.addActor(leftTable);
