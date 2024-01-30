@@ -17,9 +17,12 @@ public class AStar {
         this.closedList = new ArrayList<>();
     }
 
-    public List<Node> findPath(int startX, int startY, int endX, int endY) {
-        Node startNode = grid[startX][startY];
-        Node endNode = grid[endX][endY];
+    public List<Node> findPath(float startX, float startY, float endX, float endY) {
+        openList.clear();
+        closedList.clear();
+
+        Node startNode = grid[(int) startX][(int) startY];
+        Node endNode = grid[(int) endX][(int) endY];
 
         openList.add(startNode);
 
@@ -65,44 +68,50 @@ public class AStar {
         List<Node> path = new ArrayList<>();
         Node currentNode = endNode;
 
-        while (currentNode != startNode) {
+        while (currentNode != null && currentNode != startNode) {
             path.add(currentNode);
             currentNode = currentNode.parent;
+        }
+
+        if (currentNode == null) {
+            // Log an error or handle the case where the path is incomplete
+            return new ArrayList<>(); // Return an empty path as a fallback
         }
 
         Collections.reverse(path);
         return path;
     }
 
+
     private List<Node> getNeighbors(Node node) {
         List<Node> neighbors = new ArrayList<>();
 
-        for (int x = -1; x <= 1; x++) {
-            for (int y = -1; y <= 1; y++) {
-                if (x == 0 && y == 0) {
-                    continue; // Skip the current node
-                }
+        // Define the four cardinal directions
+        int[][] directions = {
+                {0, 1},  // Right
+                {0, -1}, // Left
+                {1, 0},  // Down
+                {-1, 0}  // Up
+        };
 
-                int checkX = node.x + x;
-                int checkY = node.y + y;
+        for (int[] dir : directions) {
+            int checkX = node.x + dir[0];
+            int checkY = node.y + dir[1];
 
-                if (checkX >= 0 && checkX < grid.length && checkY >= 0 && checkY < grid[0].length) {
-                    neighbors.add(grid[checkX][checkY]);
-                }
+            if (checkX >= 0 && checkX < grid.length && checkY >= 0 && checkY < grid[0].length && grid[checkX][checkY].walkable) {
+                neighbors.add(grid[checkX][checkY]);
             }
         }
 
         return neighbors;
     }
 
+
+
+
     private float getDistance(Node nodeA, Node nodeB) {
         int distX = Math.abs(nodeA.x - nodeB.x);
         int distY = Math.abs(nodeA.y - nodeB.y);
 
-        if (distX > distY) {
-            return 14 * distY + 10 * (distX - distY);
-        }
-
-        return 14 * distX + 10 * (distY - distX);
-    }
-}
+        return (distX + distY) * 10; // assuming a cost of 10 for each step in cardinal directions
+    }}

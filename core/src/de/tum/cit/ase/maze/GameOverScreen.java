@@ -36,7 +36,7 @@ public class GameOverScreen implements Screen {
         table.add(restartButton).width(300).row();
         restartButton.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor) {dispose();
                 game.goToGame(); // Implement this method in MazeRunnerGame
             }
         });

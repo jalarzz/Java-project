@@ -6,5 +6,6 @@ package de.tum.cit.ase.maze;
 public enum EnemyState {
     PATROLLING, // Enemy is moving around in a predefined pattern and area.
     CHASING,    // Enemy is pursuing the player character.
-    FLEEING     // Enemy is moving away from the player character.
+    FLEEING  ,   // Enemy is moving away from the player character.
+    STOPPED
 }

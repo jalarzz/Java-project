@@ -32,6 +32,7 @@ public class Character extends MazeElement implements Movable {
     private Maze maze;
     private boolean isArmed;
     private boolean keySoundPlayed = false;
+    private Enemy enemy;
 
 
 
@@ -122,7 +123,6 @@ public class Character extends MazeElement implements Movable {
 
 
 
-
                 // Fall through to default case to allow movement
             default:
                 // Move the character and update camera
@@ -205,11 +205,10 @@ public class Character extends MazeElement implements Movable {
                     hasKey = true;
                     break;
             }
-
             for (MazeElement element : mazeElements) {
                 if (element instanceof Enemy) {
                     Enemy enemy = (Enemy) element;
-                    if (this.bounds.overlaps(enemy.getBounds())) {
+                    if (enemy.getBounds().overlaps(bounds)) {
                        // Gdx.app.log("updateStatus", "Collision with Enemy");
                         loseLife();
                         break;
@@ -223,7 +222,7 @@ public class Character extends MazeElement implements Movable {
     /**
      * Decreases the character's lives by one.
      */
-    private void loseLife() {
+    protected void loseLife() {
         if (invulnerabilityTimer <= 0) {
             lives--;
           loseLife.play();
