@@ -178,11 +178,6 @@ public class Character extends MazeElement implements Movable {
         TextureRegion currentFrame;
 
         Animation<TextureRegion>[] animations = isArmed ? armedAnimations : unarmedAnimations;
-        if (isArmed) {
-            Gdx.app.log("CharacterState", "Character is now armed.");
-        } else {
-            Gdx.app.log("CharacterState", "Character is now unarmed.");
-        }
 
         if (currentDirection != null) {
             // using animation towards to the current direction

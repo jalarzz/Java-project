@@ -291,7 +291,6 @@ public class GameScreen implements Screen {
         if (playerCharacter != null) {
             playerCharacter.update(Gdx.graphics.getDeltaTime());
             playerCharacter.draw(game.getSpriteBatch());
-            //Gdx.app.log("GameScreen", "Character drawn at (" + playerCharacter.getX() + ", " + playerCharacter.getY() + ")");
         } else {
             Gdx.app.error("GameScreen", "Character is null, not drawn");
         }

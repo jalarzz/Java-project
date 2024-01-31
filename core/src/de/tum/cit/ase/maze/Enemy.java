@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.Rectangle;
 
 import java.util.List;
 
-import static com.badlogic.gdx.math.MathUtils.degRad;
 import static com.badlogic.gdx.math.MathUtils.random;
 
 public class Enemy extends MazeElement implements Movable {
@@ -98,13 +97,8 @@ public class Enemy extends MazeElement implements Movable {
         if (collisionType == 0) {
             handleWallCollision();
         } else {
-            // Update the current position in the maze layout to floor
             maze.setElementAt((int) x / TILE_SIZE, (int) y / TILE_SIZE, -1);
-
-            // Update position
             setPosition(newX, newY);
-
-            // Update the new position in the maze layout to enemy
             maze.setElementAt((int) x / TILE_SIZE, (int) y / TILE_SIZE, 4);
         }
         if (!isCollisionWithWall(newX, newY, maze, currentDirection)) {
@@ -117,15 +111,6 @@ public class Enemy extends MazeElement implements Movable {
 
     }
 
-    // New constructor without player parameter
-    public Enemy(TextureRegion texture, int x, int y, Maze maze, Animation<TextureRegion>[] animations) {
-        super(texture, x, y, TILE_SIZE, TILE_SIZE);
-        this.maze = maze;
-        this.animations = animations;
-        this.stateTime = 0f;
-
-    }
-
     /**
      * Sets the player character for the enemy to chase.
      *
@@ -133,7 +118,6 @@ public class Enemy extends MazeElement implements Movable {
      * @throws IllegalArgumentException If the player character is null.
      */
 
-    // Method to set the player character
     public void setPlayer(Character player) {
         if (player == null) {
             throw new IllegalArgumentException("Player character cannot be null");
@@ -194,7 +178,7 @@ public class Enemy extends MazeElement implements Movable {
         }
 
 
-    }  // Calculate the enemy's next position based on its current direction and speed
+    }
 
     /**
      * Determines if a collision with a wall occurs at a specified position and direction.
@@ -259,7 +243,6 @@ public class Enemy extends MazeElement implements Movable {
      */
 
     public void die() {
-        Gdx.app.log("Enemy", "Enemy dying");
         isDead = true;
         deathAnimationTime = 0; // Reset the animation timer
     }
@@ -297,7 +280,7 @@ public class Enemy extends MazeElement implements Movable {
 
             collision = isCollisionWithWall(projectedX, projectedY, maze, currentDirection);
 
-            // Ensure that the new direction is not the same as the previous direction
+            // EnsureS that the new direction is not the same as the previous direction
             if (newDirection == currentDirection) {
                 collision = true;
             }
@@ -315,28 +298,6 @@ public class Enemy extends MazeElement implements Movable {
      *
      * @return true if the player character is within the grid, false otherwise.
      */
-//    private boolean playerEntersGrid() {
-//        // Grid dimensions for the rectangular area
-//        int gridWidth = TILE_SIZE * 4;
-//        int gridHeight = TILE_SIZE * 4;
-//
-//        // Calculate the top-left corner of the grid
-//        float gridMinX = x - (float) gridWidth / 2 + (float) TILE_SIZE / 2;
-//        float gridMinY = y - (float) gridHeight / 2 + (float) TILE_SIZE / 2;
-//
-//        // Create a rectangle representing the grid around the enemy
-//        Rectangle gridBounds = new Rectangle(gridMinX, gridMinY, gridWidth, gridHeight);
-//
-//        // Check if the player's bounds overlap with the grid
-//        boolean isInGrid = player.getBounds().overlaps(gridBounds);
-//
-//        // Define the range for close proximity within the grid
-//        float proximityRadius = TILE_SIZE * 4; // for example, 2 tiles
-//        boolean isClose = distanceSquared(x, y, player.getX(), player.getY()) <= proximityRadius * proximityRadius;
-//
-//        // Return true if the player is within the grid or very close to the enemy
-//        return isInGrid || isClose;
-//    }
     private boolean playerEntersGrid() {
         // Define the range within which the player is considered to be in the enemy's range
         float detectionRadius = TILE_SIZE * 4; // For example, 4 tiles
@@ -371,10 +332,6 @@ public class Enemy extends MazeElement implements Movable {
             } else {
                 currentDirection = playerDirectionY;
             }
-//        } else if (currentState == EnemyState.FLEEING) {
-//            // When fleeing, move away from the player
-//            Direction playerDirectionX = (player.getX() > x) ? Direction.LEFT : Direction.RIGHT;
-//            Direction playerDirectionY = (player.getY() > y) ? Direction.DOWN : Direction.UP;
 
             // Randomly choose between X and Y directions with bias away from player's direction
             if (random.nextFloat() < 0.7f) {
@@ -385,8 +342,6 @@ public class Enemy extends MazeElement implements Movable {
         }
     }
 
-
-    //TODO add setPosition to Movable interface
 
     /**
      * Updates the enemy's position and its bounding box.
@@ -409,25 +364,22 @@ public class Enemy extends MazeElement implements Movable {
     public void update(float delta) {
 
         stateTime += delta;
-        // Log the current state of the enemy for debugging
-        Gdx.app.log("Enemy State", "Current state: " + currentState.toString());
+
+        // Check if the enemy is dead and play the death animation
         if (isDead) {
             deathAnimationTime += delta;
             if (deathAnimation.isAnimationFinished(deathAnimationTime)) {
                 deathAnimationPlayed = true; // Mark the animation as completed
-                Gdx.app.log("Enemy", "Death animation completed");
+
             }
             return;
         }
-
-        // Log the state change for debugging
+        // Check if the player has entered the enemy's grid
         if (playerEntersGrid() && currentState != EnemyState.CHASING) {
-            Gdx.app.log("State Change", "Switching to CHASING state");
             currentState = EnemyState.CHASING;
             currentPath = null;
             pathIndex = 0;
         } else if (!playerEntersGrid() && currentState != EnemyState.PATROLLING) {
-            Gdx.app.log("State Change", "Switching to PATROLLING state");
             currentState = EnemyState.PATROLLING;
         }
         switch (currentState) {
@@ -452,9 +404,8 @@ public class Enemy extends MazeElement implements Movable {
                 TextureRegion currentFrame = deathAnimation.getKeyFrame(deathAnimationTime, false);
                 batch.draw(currentFrame, x, y, TILE_SIZE, TILE_SIZE);
             } else {
-                Gdx.app.log("Enemy", "Death animation already played, not drawing");
+                return;
             }
-            return;
         }
         TextureRegion currentFrame = animations[currentDirection.ordinal()].getKeyFrame(stateTime, true);
         batch.draw(currentFrame, x, y, TILE_SIZE, TILE_SIZE);
@@ -462,35 +413,26 @@ public class Enemy extends MazeElement implements Movable {
 
     }
 
-    public boolean isReadyToRemove() {
-        return isDead && deathAnimationPlayed;
-    }
 
-    private boolean pathNeedsUpdate() {
-        // Check if there is no path or the enemy has reached the end of the path.
-        if (currentPath == null || pathIndex >= currentPath.size()) {
-            return true;
-        }
-
-        // Check if the player has moved a significant distance since the path was calculated.
-        Node lastTargetNode = currentPath.get(currentPath.size() - 1);
-        float playerGridX = player.getX() / TILE_SIZE;
-        float playerGridY = player.getY() / TILE_SIZE;
-        if (distanceSquared(playerGridX, playerGridY, lastTargetNode.x, lastTargetNode.y) > TILE_SIZE * TILE_SIZE) {
-            return true;
-        }
-
-        // No need to update the path
-        return false;
-    }
-
-
+    /**
+     * Calculates the squared distance between two points.
+     *
+     * @param x1 The x-coordinate of the first point.
+     * @param y1 The y-coordinate of the first point.
+     * @param x2 The x-coordinate of the second point.
+     * @param y2 The y-coordinate of the second point.
+     * @return The squared distance between the two points.
+     */
     private float distanceSquared(float x1, float y1, float x2, float y2) {
         float dx = x2 - x1;
         float dy = y2 - y1;
         return dx * dx + dy * dy;
     }
-
+    /**
+     * Follows the current path by moving towards the next node in the path.
+     *
+     * @param delta The time passed since the last frame.
+     */
     private void followPath(float delta) {
         if (currentPath != null && pathIndex < currentPath.size()) {
             Node nextNode = currentPath.get(pathIndex);
@@ -505,11 +447,24 @@ public class Enemy extends MazeElement implements Movable {
     }
 
 
+    /**
+     * Determines if the enemy has reached a specified node.
+     *
+     * @param targetX The x-coordinate of the node.
+     * @param targetY The y-coordinate of the node.
+     * @return true if the enemy has reached the node, false otherwise.
+     */
     private boolean reachedNode(float targetX, float targetY) {
         return distanceSquared(x, y, targetX, targetY) < REACHED_NODE_TOLERANCE;
     }
 
-    // Modify the moveTowards method to accept 'delta' as a parameter
+    /**
+     * Moves the enemy towards a specified target position.
+     *
+     * @param targetX The x-coordinate of the target position.
+     * @param targetY The y-coordinate of the target position.
+     * @param delta   The time passed since the last frame.
+     */
     private void moveTowards(float targetX, float targetY, float delta) {
         float diffX = targetX - x;
         float diffY = targetY - y;
