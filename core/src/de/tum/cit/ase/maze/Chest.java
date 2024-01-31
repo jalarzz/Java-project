@@ -52,12 +52,10 @@ public class Chest extends MazeElement {
                 collectible = new Sword(game.getSwordTexture(),this.x,this.y-16,gameScreen.getPlayerCharacter(),gameScreen.getHud());
                 break;
             case 1:
-                collectible = new Sword(game.getSwordTexture(),this.x,this.y-16,gameScreen.getPlayerCharacter(),gameScreen.getHud());
-                //collectible = new Life(game.getLifeTexture(), this.x, this.y-16, gameScreen.getPlayerCharacter(),gameScreen.getHud());
+                collectible = new Life(game.getLifeTexture(), this.x, this.y-16, gameScreen.getPlayerCharacter(),gameScreen.getHud());
                 break;
             case 2:
-                collectible = new Sword(game.getSwordTexture(),this.x,this.y-16,gameScreen.getPlayerCharacter(),gameScreen.getHud());
-                //collectible = new Shield(game.getShieldTexture(), this.x, this.y-16, gameScreen.getHud(), gameScreen.getPlayerCharacter());
+                collectible = new Shield(game.getShieldTexture(), this.x, this.y-16, gameScreen.getHud(), gameScreen.getPlayerCharacter());
                 break;
             default:
                 return; // In case of an unexpected value

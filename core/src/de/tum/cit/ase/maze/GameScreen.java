@@ -10,8 +10,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-import java.util.Iterator;
-
 /**
  * The GameScreen class is responsible for rendering the gameplay screen.
  * It handles the game logic and rendering of the game elements.
@@ -102,13 +100,19 @@ public class GameScreen implements Screen {
         EntryPoint entryPoint = findEntryPoint();
         if (entryPoint != null) {
             int initialLives = 5; // Number of lives for the character
-            Animation<TextureRegion>[] animations = new Animation[]{
+            Animation<TextureRegion>[] unarmedAnimations = new Animation[]{
                     game.getCharacterDownAnimation(),
                     game.getCharacterLeftAnimation(),
                     game.getCharacterRightAnimation(),
                     game.getCharacterUpAnimation()
             };
-            playerCharacter = new Character(animations, entryPoint.getX(), entryPoint.getY(), initialLives,camera);
+            Animation<TextureRegion>[] armedAnimations = new Animation[]{
+                    game.getCharacterDownAnimationArmed(),
+                    game.getCharacterLeftAnimationArmed(),
+                    game.getCharacterRightAnimationArmed(),
+                    game.getCharacterUpAnimationArmed()
+            };
+            playerCharacter = new Character(entryPoint.getX(), entryPoint.getY(), initialLives, unarmedAnimations, armedAnimations, camera);
             Gdx.app.log("GameScreen", "Character initialized at (" + entryPoint.getX() + ", " + entryPoint.getY() + ")");
         }else {
             Gdx.app.error("GameScreen", "Entry point not found, character not initialized");

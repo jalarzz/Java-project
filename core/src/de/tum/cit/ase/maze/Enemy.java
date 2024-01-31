@@ -214,6 +214,7 @@ public class Enemy extends MazeElement implements Movable {
     }
 
     public void die() {
+        Gdx.app.log("Enemy", "Enemy dying");
         isDead = true;
         deathAnimationTime = 0; // Reset the animation timer
     }
@@ -369,6 +370,7 @@ public class Enemy extends MazeElement implements Movable {
             deathAnimationTime += delta;
             if (deathAnimation.isAnimationFinished(deathAnimationTime)) {
                 deathAnimationPlayed = true; // Mark the animation as completed
+                Gdx.app.log("Enemy", "Death animation completed");
             }
             return;
         }
@@ -404,6 +406,9 @@ public class Enemy extends MazeElement implements Movable {
             if (!deathAnimationPlayed) {
                 TextureRegion currentFrame = deathAnimation.getKeyFrame(deathAnimationTime, false);
                 batch.draw(currentFrame, x, y, TILE_SIZE, TILE_SIZE);
+            }
+            else {
+                Gdx.app.log("Enemy", "Death animation already played, not drawing");
             }
             return;
         }

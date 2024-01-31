@@ -129,8 +129,9 @@ public class MazeRunnerGame extends Game {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
         this.loadCharacterAnimations(); // Load character animations
+        this.loadCharacterArmedAnimations(); // load armed character animations
         this.loadEnemyAnimations(); // Load enemy animations
-        this.loadCharacterArmedAnimations();
+
 
         // Load the sprite sheet
         mazeElementsTexture = new Texture(Gdx.files.internal("basictiles-shee.salomet.png"));
@@ -316,17 +317,19 @@ public class MazeRunnerGame extends Game {
      * Loads the armed character animations from the character.png file.
      */
     private void loadCharacterArmedAnimations() {
-        Texture walkSheet = new Texture(Gdx.files.internal("character.salome-sheet.png"));
+        Texture walkSheet = new Texture(Gdx.files.internal("characters.salome-sheet.png"));
+        TextureRegion armedRegion = new TextureRegion(walkSheet,0,4,84,84);
+
 
         int frameWidth = 16;
         int frameHeight = 32;
         int animationFrames = 4; // Number of frames per direction
 
         // Create animations for each direction
-        characterDownAnimation = createAnimation(walkSheet, 0, frameWidth, frameHeight, animationFrames);
-        characterLeftAnimation = createAnimation(walkSheet, 3, frameWidth, frameHeight, animationFrames);
-        characterRightAnimation = createAnimation(walkSheet, 1, frameWidth, frameHeight, animationFrames);
-        characterUpAnimation = createAnimation(walkSheet, 2, frameWidth, frameHeight, animationFrames);
+        characterDownAnimationArmed = createAnimation(walkSheet, 0, frameWidth, frameHeight, animationFrames);
+        characterLeftAnimationArmed = createAnimation(walkSheet, 3, frameWidth, frameHeight, animationFrames);
+        characterRightAnimationArmed = createAnimation(walkSheet, 1, frameWidth, frameHeight, animationFrames);
+        characterUpAnimationArmed = createAnimation(walkSheet, 2, frameWidth, frameHeight, animationFrames);
     }
 
     /**
@@ -419,8 +422,8 @@ public class MazeRunnerGame extends Game {
         int frameWidth = 24;
         int frameHeight = 24;
         int animationFrames = 4;
-        int startCol = 98;
-        int startRow = 98;
+        int startCol = 4;
+        int startRow = 4;
 
         Array<TextureRegion> keyFrames = new Array<>(TextureRegion.class);
 
@@ -433,7 +436,7 @@ public class MazeRunnerGame extends Game {
         }
 
 
-        return new Animation<>(0.1f, keyFrames); // Adjust the frame duration as needed
+        return new Animation<>(0.1f, keyFrames);
     }
 
     protected Animation<TextureRegion> loadKeyAnimation() {

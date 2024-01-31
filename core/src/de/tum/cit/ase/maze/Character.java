@@ -1,7 +1,6 @@
 package de.tum.cit.ase.maze;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -18,7 +17,8 @@ public class Character extends MazeElement implements Movable {
     private int lives;
     private boolean hasKey;
     private boolean reachedExit;
-    private Animation<TextureRegion>[] animations;
+    private Animation<TextureRegion>[] unarmedAnimations;
+    private Animation<TextureRegion>[] armedAnimations;
     private float stateTime;
     private Direction currentDirection;
     private OrthographicCamera camera;
@@ -40,14 +40,18 @@ public class Character extends MazeElement implements Movable {
     /**
      * Constructor for the Character class.
      *
-     * @param animations Array of animations for each direction.
-     * @param x Initial x-coordinate of the character.
-     * @param y Initial y-coordinate of the character.
-     * @param lives Number of lives the character starts with.
+     * @param unarmedAnimations        Array of animations for each direction.
+     * @param armedAnimations        Array of animations for each direction.
+     * @param x                 Initial x-coordinate of the character.
+     * @param y                 Initial y-coordinate of the character.
+     * @param lives             Number of lives the character starts with.
+     * @param unarmedAnimations
+     * @param armedAnimations
      */
-    public Character(Animation<TextureRegion>[] animations, float x, float y, int lives, OrthographicCamera camera) {
+    public Character(float x, float y, int lives, Animation<TextureRegion>[] unarmedAnimations, Animation<TextureRegion>[] armedAnimations, OrthographicCamera camera) {
         super(null, x, y,CHAR_WIDTH,CHAR_HEIGHT); // texture is set to null initially
-        this.animations = animations;
+        this.unarmedAnimations = unarmedAnimations;
+        this.armedAnimations = armedAnimations;
         this.lives = lives;
         this.hasKey = false;
         this.stateTime = 0f;
@@ -174,6 +178,13 @@ public class Character extends MazeElement implements Movable {
     public void draw(SpriteBatch batch) {
         TextureRegion currentFrame;
 
+        Animation<TextureRegion>[] animations = isArmed ? armedAnimations : unarmedAnimations;
+        if (isArmed) {
+            Gdx.app.log("CharacterState", "Character is now armed.");
+        } else {
+            Gdx.app.log("CharacterState", "Character is now unarmed.");
+        }
+
         if (currentDirection != null) {
             // Use the animation corresponding to the current direction
             currentFrame = animations[currentDirection.ordinal()].getKeyFrame(stateTime/3, true);
@@ -288,9 +299,6 @@ public class Character extends MazeElement implements Movable {
         return reachedExit;
     }
 
-    public Animation<TextureRegion>[] getAnimations() {
-        return animations;
-    }
 
     public float getStateTime() {
         return stateTime;
