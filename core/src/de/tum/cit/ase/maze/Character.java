@@ -59,7 +59,7 @@ public class Character extends MazeElement implements Movable {
         this.bounds = new Rectangle(x+2,y+2,8,4);
         this.isArmed = false;
         this.loseLife = Gdx.audio.newSound(Gdx.files.internal("Realistic_Punch-Mark_DiAngelo-1609462330.mp3"));
-        this.keyObtained = Gdx.audio.newSound(Gdx.files.internal("mario-coin-sfx.mp3"));
+        this.keyObtained = Gdx.audio.newSound(Gdx.files.internal("coin.mp3"));
 
     }
 
@@ -185,10 +185,10 @@ public class Character extends MazeElement implements Movable {
         }
 
         if (currentDirection != null) {
-            // Use the animation corresponding to the current direction
+            // using animation towards to the current direction
             currentFrame = animations[currentDirection.ordinal()].getKeyFrame(stateTime/3, true);
         } else {
-            // When not moving, show the first frame of the right animation
+            // if not moving, showing first frame of the animation
             currentFrame = animations[Direction.RIGHT.ordinal()].getKeyFrame(0, false);
         }
 
@@ -205,7 +205,6 @@ public class Character extends MazeElement implements Movable {
     public void updateStatus(Maze maze, Array<MazeElement> mazeElements) {
         try {
             int elementType = maze.getElementAt((int) x, (int) y);
-            //Gdx.app.log("updateStatus", "Element Type: " + elementType);
 
             switch (elementType) {
                 case 2: // Exit
@@ -217,11 +216,11 @@ public class Character extends MazeElement implements Movable {
                     hasKey = true;
                     break;
             }
+            //iterating through the maze elements to check if the character collides with an enemy
             for (MazeElement element : mazeElements) {
                 if (element instanceof Enemy) {
                     Enemy enemy = (Enemy) element;
                     if (this.bounds.overlaps(enemy.getBounds())) {
-                       // Gdx.app.log("updateStatus", "Collision with Enemy");
                         if(this.isArmed){
                             enemy.die();
                         }

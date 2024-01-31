@@ -100,8 +100,7 @@ public class AStar {
         }
 
         if (currentNode == null) {
-            // Log an error or handle the case where the path is incomplete
-            return new ArrayList<>(); // Return an empty path as a fallback
+            return new ArrayList<>(); // Return empty path if no path is found
         }
 
         Collections.reverse(path);
@@ -116,7 +115,7 @@ public class AStar {
     private List<Node> getNeighbors(Node node) {
         List<Node> neighbors = new ArrayList<>();
 
-        // Define the four cardinal directions
+        // Defining four directions
         int[][] directions = {
                 {0, 1},  // Right
                 {0, -1}, // Left

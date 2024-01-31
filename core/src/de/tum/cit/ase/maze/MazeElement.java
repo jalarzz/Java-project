@@ -44,32 +44,66 @@ public abstract class MazeElement {
         batch.draw(texture, x , y );
     }
 
+    /**
+     * Retrieves the texture of the maze element.
+     *
+     * @return The TextureRegion representing the element's texture.
+     */
     public TextureRegion getTexture() {
         return texture;
     }
-
+    /**
+     * Sets the texture of the maze element.
+     *
+     * @param texture The TextureRegion to set as the element's texture.
+     */
     public void setTexture(TextureRegion texture) {
         this.texture = texture;
     }
 
+    /**
+     * Retrieves the x-coordinate of the maze element.
+     *
+     * @return The x-coordinate of the element's position.
+     */
     public float getX() {
         return x;
     }
 
+    /**
+     * Sets the x-coordinate of the maze element.
+     *
+     * @param x The x-coordinate to set as the element's position.
+     */
     public void setX(int x) {
         this.x = x;
         this.bounds.setX(x);
     }
 
+    /**
+     * Retrieves the y-coordinate of the maze element.
+     *
+     * @return The y-coordinate of the element's position.
+     */
     public float getY() {
         return y;
     }
 
+    /**
+     * Sets the y-coordinate of the maze element.
+     *
+     * @param y The y-coordinate to set as the element's position.
+     */
     public void setY(int y) {
         this.y = y;
         this.bounds.setY(y);
     }
 
+    /**
+     * Retrieves the width of the maze element.
+     *
+     * @return The width of the element.
+     */
     public Rectangle getBounds() {
         return bounds;
     }

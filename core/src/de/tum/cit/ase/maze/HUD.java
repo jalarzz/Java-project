@@ -47,41 +47,38 @@ public class HUD {
         this.noKeyAnimation = noKeyAnimation;
 
 
-
-
-
         stage = new Stage(new ScreenViewport());
         Table leftTable = new Table();
         Table rightTable = new Table();
-        // Set up the left table for hearts
+        // Setting up the left table for hearts
         leftTable.top().left();
         hearts = new Image[initialLives];
         for (int i = 0; i < initialLives; i++) {
             hearts[i] = new Image(fullHeart);
-            hearts[i].setScale(heartScaling);// Set the size of the heart images
+            hearts[i].setScale(heartScaling);// size of hearts
             leftTable.add(hearts[i]).pad(25);
         }
 
-        // Set up the right table for the key image
+        // right table for key
         rightTable.top().right();
-        keyImage = new Image(noKeyAnimation.getKeyFrame(0)); // Initialize with the first frame of no key animation
+        keyImage = new Image(noKeyAnimation.getKeyFrame(0));
         keyImage.setScale(keyScaling);
         rightTable.add(keyImage).pad(60, 0, 0, 60);
 
-        // Add both tables to the stage
+        // make the tables fill the stage
         stage.addActor(leftTable);
         stage.addActor(rightTable);
         leftTable.setFillParent(true);
         rightTable.setFillParent(true);
 
-        //Stuff for message
+
         // Initialize the message Label
         Label.LabelStyle labelStyle = new Label.LabelStyle(new BitmapFont(), Color.WHITE);
         messageLabel = new Label("", labelStyle);
-        messageLabel.setFontScale(2.0f); // Adjust the scale as needed
-        messageLabel.setPosition(Gdx.graphics.getWidth() / 8f, Gdx.graphics.getHeight() * 0.9f); // Position the label on the screen
-        messageLabel.setAlignment(Align.center); // Center the text
-        stage.addActor(messageLabel); // Add the label to the stage
+        messageLabel.setFontScale(2.0f);
+        messageLabel.setPosition(Gdx.graphics.getWidth() / 8f, Gdx.graphics.getHeight() * 0.9f);
+        messageLabel.setAlignment(Align.center);
+        stage.addActor(messageLabel);
 
 
         // Initialize the invincibility countdown label
@@ -141,7 +138,7 @@ public class HUD {
      * @param hasKey A boolean indicating whether the player currently possesses a key.
      */
     public void updateKey(float delta, boolean hasKey) {
-        stateTime += delta; // Update stateTime with the time elapsed since the last frame
+        stateTime += delta; // Update stateTime for animation
 
         Animation<TextureRegion> currentAnimation = hasKey ? noKeyAnimation : keyAnimation;
         keyImage.setDrawable(new TextureRegionDrawable(currentAnimation.getKeyFrame(stateTime, true)));
@@ -159,14 +156,18 @@ public class HUD {
             exitLabel.setPosition(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f);
         }
     }
-
+    /**
+     * Draws the HUD on the screen.
+     */
     public void draw() {
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
     }
 
 
-
+    /**
+     * Disposes of the resources used by the HUD.
+     */
     public void dispose() {
         stage.dispose();
     }

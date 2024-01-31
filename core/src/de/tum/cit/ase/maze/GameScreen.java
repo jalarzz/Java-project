@@ -58,22 +58,12 @@ public class GameScreen implements Screen {
         // Get the textures for the HUD
         TextureRegion fullHeart = game.getFullHeartTexture();
         TextureRegion emptyHeart = game.getEmptyHeartTexture();
-//        TextureRegion keyTexture = game.getKeyTexture();
-//        TextureRegion noKeyTexture = game.getNoKeyTexture();
         Animation<TextureRegion> keyAnimation = game.loadKeyAnimation();
         Animation<TextureRegion> noKeyAnimation = game.loadNoKeyAnimation();
 
-        // Initialize HUD
+        // Initializing HUD
         hud = new HUD(fullHeart, emptyHeart, noKeyAnimation,keyAnimation, 5);
 
-        /**
-         * todo:
-         * create game character here and make him start at the spawn. at the same time, it should
-         * have a connection with the camera as when the player moves, the camera also should
-         * I recommend that the input will be checked after the character has successfully
-         * moved around or done an action
-         * there can be a priority list for what action should be counted first if multiple inputs are there
-         */
         // Create the player character
         initializePlayerCharacter();
 
@@ -201,8 +191,6 @@ public class GameScreen implements Screen {
     }
 
 
-
-
     /**
      * Renders the game elements on the screen. This includes drawing the maze,
      * characters, enemies, and other collectibles. It also handles game state updates
@@ -235,12 +223,12 @@ public class GameScreen implements Screen {
 
         if(!game.isPaused) {
 
-        ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
+        ScreenUtils.clear(0, 0, 0, 1); // Clearing the screen
 
-        // Update camera to center on the character
+        // Updating camera to center on the character
         camera.position.set(playerCharacter.getX(), playerCharacter.getY(), 0);
         camera.update();
-        // Handle input for character movement
+        // Handling input for character movement
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             playerCharacter.move(Direction.LEFT, game.getMaze(), delta);
         } if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
@@ -257,7 +245,7 @@ public class GameScreen implements Screen {
         updateCollectibles(delta);
 
 
-        game.getSpriteBatch().begin(); // Important to call this before drawing anything
+        game.getSpriteBatch().begin(); // needs to be called before drawing anything
         for (int i = 0; i < game.getMaze().getLayout().length; i++) {
             for (int j = 0; j < game.getMaze().getLayout()[0].length; j++) {
                 game.getSpriteBatch().draw(
@@ -269,7 +257,7 @@ public class GameScreen implements Screen {
         }
 
         for (MazeElement element : mazeElements) {
-            // Update and draw specific types of elements
+            // Updating and drawing specific types of elements
             if (element instanceof Enemy enemy) {
                 enemy.update(delta);
                 enemy.draw(game.getSpriteBatch());} else
@@ -277,7 +265,7 @@ public class GameScreen implements Screen {
                 trap.update(Gdx.graphics.getDeltaTime());
                 trap.draw(game.getSpriteBatch());
             } else if (element instanceof Lava lava) {
-                lava.update(delta); // Update the lava animation
+                lava.update(delta);
                 lava.draw(game.getSpriteBatch());
             } else if (element instanceof Key key && !playerCharacter.hasKey()) {
                 key.update(delta); // Update the key animation if the player doesn't have the key
@@ -354,27 +342,6 @@ public class GameScreen implements Screen {
             }
         }
     }
-    /**
-     * Takes out the dead enemies.
-     * @param delta The time in seconds since the last update.
-     */
-    public void updatEnemies(float delta){
-        // Temporary list to hold enemies that are ready to be removed
-        Array<MazeElement> elementsToRemove = new Array<>();
-
-        for (MazeElement element : mazeElements) {
-            if (element instanceof Enemy) {
-                Enemy enemy = (Enemy) element;
-                enemy.update(delta);
-                if (enemy.isReadyToRemove()) {
-                    elementsToRemove.add(enemy); // Mark the enemy for removal
-                }
-            }
-            }
-            mazeElements.removeAll(elementsToRemove, true);
-
-        }
-
 
     /**
      * Updates the state of collectibles, checking for collection and removing collected items.

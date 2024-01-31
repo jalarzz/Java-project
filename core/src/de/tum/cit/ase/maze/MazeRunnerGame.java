@@ -48,16 +48,15 @@ public class MazeRunnerGame extends Game {
 
     private static TextureRegion fullHeartTexture;
     private static TextureRegion emptyHeartTexture;
-    //    private TextureRegion keyTexture;
-//    private TextureRegion noKeyTexture;
     private Animation<TextureRegion> noKeyAnimation;
     private Animation<TextureRegion> keyAnimation;
 
-
+    // Music
     private Music backgroundMusic;
     private Music gameOverMusic;
     private Music gameMusic;
     private Music victoryMusic;
+
     //Collectibles texture regions
     private static TextureRegion swordTextureRegion;
     private static TextureRegion lifeTextureRegion;
@@ -68,9 +67,7 @@ public class MazeRunnerGame extends Game {
     private Texture collectiblesTexture;
     protected boolean isPaused = false;
 
-    public Maze getMaze() {
-        return maze;
-    }
+
 
     // Character animation downwards
     private Animation<TextureRegion> characterDownAnimation;
@@ -162,14 +159,15 @@ public class MazeRunnerGame extends Game {
 
         // Play some background music
         // Background sound
-        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3"));
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Kevin MacLeod - Pixelland.mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.setVolume(0.1f);
         backgroundMusic.play();
         loadTextures();
-        gameOverMusic = Gdx.audio.newMusic(Gdx.files.internal("No Hope.mp3"));
-        gameMusic = Gdx.audio.newMusic(Gdx.files.internal("Bob&#039;s Adventures - back34.mp3"));
-        victoryMusic = Gdx.audio.newMusic(Gdx.files.internal("Riverside Ride.mp3"));
+        gameOverMusic = Gdx.audio.newMusic(Gdx.files.internal("Jorge Hernandez - Chopsticks.mp3"));
+        gameMusic = Gdx.audio.newMusic(Gdx.files.internal("Jeremy Blake - Powerup!.mp3"));
+        victoryMusic = Gdx.audio.newMusic(Gdx.files.internal(" 8 bit Paradise.mp3"));
+        this.setScreen(menuScreen);
         goToMenu(); // Navigate to the menu screen
     }
 
@@ -238,7 +236,7 @@ public class MazeRunnerGame extends Game {
         Gdx.app.log("Debug", menuScreen.toString());
         if (menuScreen != null) {
             menuScreen.dispose(); // Dispose the menu screen if it exists
-            menuScreen = null;
+
         }
     }
     /**
@@ -568,7 +566,7 @@ public class MazeRunnerGame extends Game {
 
     }
 
-    // Getter methods
+    // Getters and setters
     public Skin getSkin() {
         return skin;
     }
@@ -581,7 +579,6 @@ public class MazeRunnerGame extends Game {
         return spriteBatch;
     }
 
-    // Getters for each TextureRegion
     public static TextureRegion getWallTextureRegion() {
         return wallTextureRegion;
     }
@@ -741,5 +738,9 @@ public class MazeRunnerGame extends Game {
 
     public Animation<TextureRegion> getCharacterRightAnimationArmed() {
         return characterRightAnimationArmed;
+    }
+
+    public Maze getMaze() {
+        return maze;
     }
 }

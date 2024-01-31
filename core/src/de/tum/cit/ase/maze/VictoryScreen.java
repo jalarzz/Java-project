@@ -132,20 +132,22 @@ public class VictoryScreen implements Screen {
 
     @Override
     public void resume() {
-        // Handle resume
+
     }
 
     @Override
     public void hide() {
-        // Handle when the screen is hidden
+
     }
 
     @Override
     public void dispose() {
 
-        // Dispose of other resources if necessary
     }
 
+    /**
+     * Sets the input processor to the stage when the screen is shown.
+     */
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);

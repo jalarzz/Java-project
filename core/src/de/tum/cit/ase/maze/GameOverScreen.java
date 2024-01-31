@@ -45,6 +45,7 @@ public class GameOverScreen implements Screen {
         restartButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {dispose();
+                stage.dispose();
                 game.goToGame();
             }
         });

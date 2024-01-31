@@ -49,9 +49,6 @@ Heart: Grants Froggo an extra life, up to a maximum of 5, humorously acknowledgi
 Shield: Temporarily renders Froggo invincible, visually supported by a countdown timer, adding a strategic layer to gameplay.
 Sword: Arms Froggo, enabling him to vanquish enemies that subsequently vanish, adding a layer of mystique. Each collectible's acquisition is accompanied by an explanatory message, enhancing player understanding and engagement. The shield's visible timer provides critical feedback on its temporary nature, and the sword's visual representation in Froggo's hands emphasizes the empowerment it offers.
 
-Lava
-
-Some levels introduce Lava, animated with fluid dynamics, presenting both a visual spectacle and a gameplay hazard. Its inclusion adds variety to the challenges Froggo faces, encouraging players to adapt their strategies.
 
 Nothing new or special needed to run our game but we will remind you of the initial instructions published on artemis:
 
@@ -69,4 +66,9 @@ Configure the Run Configuration: Ensure the run configuration uses the Gradle ta
 Adjust the classpath of the module to desktop.main if necessary.
 Execute the Run Configuration: Use the IDE's run functionality to start the game.
 
+Copyrights:
+Jeremy Blake - Powerup! for Games Music
+Jorge Hernandez - Chopsticks ♫ NO COPYRIGHT 8-bit Music for Game Over Screen
+Kevin MacLeod - Pixelland ♫ NO COPYRIGHT 8-bit Music for Menu Screen
+Paradise - Nash Music Library
 Gvantsa and Jala

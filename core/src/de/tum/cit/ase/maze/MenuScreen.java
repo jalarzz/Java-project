@@ -51,12 +51,6 @@ public class MenuScreen implements Screen {
 
 
 
-
-
-        // Add a label as a title
-       // table.add(new Label("Froggo & Capitalism", game.getSkin(), "title")).padBottom(80).row();
-
-
         //Resume the Game
 
         TextButton continueButton = new TextButton("Continue", game.getSkin());
@@ -123,6 +117,11 @@ public class MenuScreen implements Screen {
         });
     }
 
+    /**
+     * Renders the menu screen. Draws the background image and the stage.
+     *
+     * @param delta The time in seconds since the last frame.
+     */
     @Override
     public void render(float delta) {
         /// Convert RGB values to OpenGL's 0.0 to 1.0 range
@@ -148,11 +147,20 @@ public class MenuScreen implements Screen {
         stage.draw();
     }
 
+    /**
+     * Resizes the stage when the window is resized.
+     *
+     * @param width The new window width.
+     * @param height The new window height.
+     */
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true); // Update the stage viewport on resize
     }
 
+    /**
+     * Disposes of the stage and background image when the screen is disposed.
+     */
     @Override
     public void dispose() {
         // Dispose of the stage when screen is disposed
@@ -162,6 +170,9 @@ public class MenuScreen implements Screen {
         }
     }
 
+    /**
+     * Sets the input processor to the stage when the screen is shown.
+     */
     @Override
     public void show() {
         // Set the input processor so the stage can receive input events
