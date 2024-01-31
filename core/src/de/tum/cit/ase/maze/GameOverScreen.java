@@ -12,12 +12,20 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
+/**
+ * Represents the game over screen shown when the player loses the game.
+ * This screen provides options to restart the game or return to the main menu.
+ */
 public class GameOverScreen implements Screen {
 
     private final MazeRunnerGame game;
     private final Stage stage;
 
+    /**
+     * Constructs a GameOverScreen for the provided game instance.
+     *
+     * @param game The instance of the MazeRunnerGame to which this screen belongs.
+     */
     public GameOverScreen(MazeRunnerGame game) {
         this.game = game;
         OrthographicCamera camera = new OrthographicCamera();
@@ -37,7 +45,7 @@ public class GameOverScreen implements Screen {
         restartButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {dispose();
-                game.goToGame(); // Implement this method in MazeRunnerGame
+                game.goToGame();
             }
         });
 
@@ -53,7 +61,11 @@ public class GameOverScreen implements Screen {
 
     }
 
-    // Implement the required Screen interface methods here...
+    /**
+     * Renders the game over screen and its UI elements.
+     *
+     * @param delta The time in seconds since the last render call.
+     */
 
     @Override
     public void render(float delta) {
@@ -61,9 +73,14 @@ public class GameOverScreen implements Screen {
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
     }
-
+    /**
+     * Handles resizing the screen.
+     *
+     * @param width The new width of the screen.
+     * @param height The new height of the screen.
+     */
     @Override
-    public void resize(int i, int i1) {
+    public void resize(int width, int height) {
 
     }
 
@@ -86,11 +103,12 @@ public class GameOverScreen implements Screen {
     public void dispose() {
 
     }
-
+    /**
+     * Called when the game over screen becomes the current screen for a game.
+     */
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
     }
 
-    // Implement other methods (resize, pause, resume, hide, dispose) as needed
 }

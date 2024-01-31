@@ -31,7 +31,17 @@ public class Enemy extends MazeElement implements Movable {
     private boolean deathAnimationPlayed = false;
     private float deathAnimationTime = 0;
 
-
+    /**
+     * Constructs an enemy with specified parameters.
+     *
+     * @param texture        The texture for the enemy.
+     * @param x              The initial x-coordinate of the enemy.
+     * @param y              The initial y-coordinate of the enemy.
+     * @param player         The player character to chase.
+     * @param maze           The maze in which the enemy is located.
+     * @param animations     Array of animations for the enemy's movement.
+     * @param deathAnimation Animation to play upon the enemy's death.
+     */
     public Enemy(TextureRegion texture, int x, int y, Character player, Maze maze, Animation<TextureRegion>[] animations, Animation<TextureRegion> deathAnimation) {
         super(texture, x, y, TILE_SIZE, TILE_SIZE);
         this.currentState = EnemyState.PATROLLING;
@@ -46,9 +56,16 @@ public class Enemy extends MazeElement implements Movable {
 
     }
 
+    /**
+     * Moves the enemy in a specified direction.
+     *
+     * @param direction The direction in which to move the enemy.
+     * @param maze      The maze to check for valid moves.
+     * @param delta     The time passed since the last frame.
+     */
     @Override
     public void move(Direction direction, Maze maze, float delta) {
-        float speed = TILE_SIZE * delta; // Adjust the speed if necessary
+        float speed = TILE_SIZE * delta;
         float newX = x;
         float newY = y;
 
@@ -109,6 +126,13 @@ public class Enemy extends MazeElement implements Movable {
 
     }
 
+    /**
+     * Sets the player character for the enemy to chase.
+     *
+     * @param player The player character.
+     * @throws IllegalArgumentException If the player character is null.
+     */
+
     // Method to set the player character
     public void setPlayer(Character player) {
         if (player == null) {
@@ -117,6 +141,12 @@ public class Enemy extends MazeElement implements Movable {
         this.player = player;
     }
 
+    /**
+     * Converts the maze layout to a grid of nodes for pathfinding.
+     *
+     * @param layout The layout of the maze.
+     * @return A grid of nodes representing the maze.
+     */
     private Node[][] convertToNodes(int[][] layout) {
         Node[][] nodes = new Node[layout.length][layout[0].length];
 
@@ -130,12 +160,10 @@ public class Enemy extends MazeElement implements Movable {
     }
 
     /**
-     * Handles the patrolling behavior of the enemy within a 3x3 grid.
-     * The enemy moves randomly within this grid, avoiding walls and traps.
-     * The enemy changes state if the player enters its patrolling grid.
+     * Handles the enemy's patrolling behavior within the maze.
      *
      * @param delta The time passed since the last frame.
-     * @param maze  The maze in which the enemy is moving.
+     * @param maze  The maze in which the enemy patrols.
      */
     private void patrol(float delta, Maze maze) {
         float speed = TILE_SIZE * delta;
@@ -168,7 +196,15 @@ public class Enemy extends MazeElement implements Movable {
 
     }  // Calculate the enemy's next position based on its current direction and speed
 
-
+    /**
+     * Determines if a collision with a wall occurs at a specified position and direction.
+     *
+     * @param x         The x-coordinate of the position to check.
+     * @param y         The y-coordinate of the position to check.
+     * @param maze      The maze containing the walls.
+     * @param direction The direction of movement.
+     * @return true if a collision with a wall occurs, false otherwise.
+     */
     private boolean isCollisionWithWall(float x, float y, Maze maze, Direction direction) {
         int gridX = (int) (x / TILE_SIZE);
         int gridY = (int) (y / TILE_SIZE);
@@ -198,6 +234,11 @@ public class Enemy extends MazeElement implements Movable {
         return tileType == 0; // Collision with a wall if the tile type is 0
     }
 
+    /**
+     * Initiates the enemy's chasing behavior towards the player character.
+     *
+     * @param delta The time passed since the last frame.
+     */
     private void chase(float delta) {
         float enemyGridX = x / TILE_SIZE;
         float enemyGridY = y / TILE_SIZE;
@@ -212,6 +253,10 @@ public class Enemy extends MazeElement implements Movable {
         }
         followPath(delta);
     }
+
+    /**
+     * Marks the enemy as dead and starts playing the death animation.
+     */
 
     public void die() {
         Gdx.app.log("Enemy", "Enemy dying");
@@ -406,8 +451,7 @@ public class Enemy extends MazeElement implements Movable {
             if (!deathAnimationPlayed) {
                 TextureRegion currentFrame = deathAnimation.getKeyFrame(deathAnimationTime, false);
                 batch.draw(currentFrame, x, y, TILE_SIZE, TILE_SIZE);
-            }
-            else {
+            } else {
                 Gdx.app.log("Enemy", "Death animation already played, not drawing");
             }
             return;
@@ -417,6 +461,7 @@ public class Enemy extends MazeElement implements Movable {
 
 
     }
+
     public boolean isReadyToRemove() {
         return isDead && deathAnimationPlayed;
     }

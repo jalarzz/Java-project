@@ -80,7 +80,10 @@ public class GameScreen implements Screen {
 
     }
 
-    //Load maze elements
+    /**
+     * Loads maze elements based on the maze layout. Converts each type in the layout
+     * into a corresponding MazeElement instance and adds it to the mazeElements array.
+     */
     private void loadMazeElements() {
         int[][] layout = game.getMaze().getLayout();
         for (int i = 0; i < layout.length; i++) {
@@ -94,7 +97,8 @@ public class GameScreen implements Screen {
     }
 
     /**
-     * Initializes the player character with animation and positions it at the entry point.
+     * Initializes the player character, positioning it at the maze's entry point and setting up its animations.
+     * It also binds the player character to the camera and handles enemy-player interactions initialization.
      */
     private void initializePlayerCharacter() {
         EntryPoint entryPoint = findEntryPoint();
@@ -137,7 +141,16 @@ public class GameScreen implements Screen {
         throw new IllegalStateException("Entry point not found in the maze.");
     }
 
-    //Create elements of each type
+    /**
+     * Creates and returns a MazeElement based on the type parameter. This method
+     * uses the maze layout information to instantiate different types of maze elements
+     * like walls, floors, enemies, etc.
+     *
+     * @param type The type of maze element to create.
+     * @param x The x-coordinate of the maze element in the maze grid.
+     * @param y The y-coordinate of the maze element in the maze grid.
+     * @return A MazeElement instance corresponding to the given type.
+     */
     private MazeElement createElementFromType(int type, int x, int y) {
         // The x and y coordinates might need to be adjusted or scaled
         // depending on your game's coordinate system and tile size.
@@ -190,7 +203,13 @@ public class GameScreen implements Screen {
 
 
 
-    // Screen interface methods with necessary functionality
+    /**
+     * Renders the game elements on the screen. This includes drawing the maze,
+     * characters, enemies, and other collectibles. It also handles game state updates
+     * like pausing and resuming.
+     *
+     * @param delta Time since the last frame was rendered.
+     */
     @Override
     public void render(float delta) {
         // Check for escape key press to go back to the menu
@@ -309,7 +328,7 @@ public class GameScreen implements Screen {
     }
 
     /**
-     * Handles user input for character movement and interactions.
+     * Handles user input to control the player character and interact with the game world.
      *
      * @param delta The time in seconds since the last update.
      */
@@ -372,6 +391,11 @@ public class GameScreen implements Screen {
         }
         collectibles.removeAll(collected, true); // Remove collected items from the array
     }
+    /**
+     * Adds a collectible to the game. This can be called when new collectibles are spawned in the game world.
+     *
+     * @param collectible The collectible to add to the game.
+     */
 
     public void addCollectible(Collectible collectible) {
         this.collectibles.add(collectible);

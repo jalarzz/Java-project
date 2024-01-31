@@ -217,11 +217,6 @@ public class MazeRunnerGame extends Game {
         backgroundMusic.setLooping(true);
         this.menuScreen = new MenuScreen(this);
         this.setScreen(menuScreen);// Set the current screen to MenuScreen
-        ;
-       /* if (gameScreen != null) {
-            gameScreen.dispose(); // Dispose the game screen if it exists
-            gameScreen = null;
-        }*/
     }
 
     /**
@@ -247,7 +242,7 @@ public class MazeRunnerGame extends Game {
         }
     }
     /**
-     * Switches to the game screen.
+     * Switches back to the game screen. Resumes game where you left off.
      */
     public void resumeGame() {
         if (backgroundMusic.isPlaying()) {
@@ -267,7 +262,16 @@ public class MazeRunnerGame extends Game {
         }
     }
 
-
+    /**
+     * Loads a maze configuration from a given file and initiates the transition to the game screen.
+     * This method creates a new Maze instance based on the file content, sets the current game state
+     * to reflect the newly loaded maze, and navigates to the game screen where the maze will be displayed.
+     * Logging is used to confirm the successful transition and the existence of the game screen.
+     *
+     * @param fileHandle The file handle representing the source file for the maze configuration.
+     *                   This file should contain the maze layout and possibly other settings
+     *                   related to the maze that will be interpreted by the Maze class.
+     */
     public void loadMaze(FileHandle fileHandle) {
         this.maze = new Maze(fileHandle);
         goToGame(); // Go to the game screen after loading the maze
@@ -348,7 +352,9 @@ public class MazeRunnerGame extends Game {
         enemyRightAnimation = createAnimation(walkSheet, 2, frameWidth, frameHeight, animationFrames);
         enemyUpAnimation = createAnimation(walkSheet, 3, frameWidth, frameHeight, animationFrames);
     }
-
+    /**
+     * Loads and initializes textures for various game elements. This includes setting up texture regions for hearts and loading other sprites from asset files.
+     */
     private void loadTextures() {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         Texture spriteSheet = new Texture(Gdx.files.internal("objects.png")); // Adjust path and coordinates
@@ -356,12 +362,18 @@ public class MazeRunnerGame extends Game {
         Texture keytexture = new Texture(Gdx.files.internal("objects.png"));
         fullHeartTexture = new TextureRegion(spriteSheet, 64, 0, 16, 16);
         emptyHeartTexture = new TextureRegion(spriteSheet, 128, 0, 16, 16);
-//        keyTexture = new TextureRegion(keytexture,0,64, 16, 16);
-//        noKeyTexture = new TextureRegion(noKeytexture,0,80, 16, 16);
+
     }
 
     /**
-     * Creates an animation from a specific row of a sprite sheet.
+     * Creates an animation sequence from a texture sheet based on specified parameters.
+     *
+     * @param sheet The texture sheet containing animation frames.
+     * @param row The row in the texture sheet where the animation frames are located.
+     * @param frameWidth The width of each animation frame.
+     * @param frameHeight The height of each animation frame.
+     * @param frameCount The total number of frames in the animation sequence.
+     * @return An Animation object containing the sequence of texture regions for the animation.
      */
     private Animation<TextureRegion> createAnimation(Texture sheet, int row, int frameWidth, int frameHeight, int frameCount) {
         Array<TextureRegion> frames = new Array<>();
@@ -370,7 +382,11 @@ public class MazeRunnerGame extends Game {
         }
         return new Animation<>(0.1f, frames);
     }
-
+    /**
+     * Loads the animation for the key not being possessed by the player.
+     *
+     * @return An Animation object for the no-key state.
+     */
     protected Animation<TextureRegion> loadNoKeyAnimation() {
         Texture noKeySheet = new Texture(Gdx.files.internal("objects.OwOt.png")); // Make sure this path is correct
 
@@ -391,7 +407,11 @@ public class MazeRunnerGame extends Game {
         }
         return new Animation<>(0.1f, noKeyFrames);
     }
-
+    /**
+     * Loads the animation for traps within the game.
+     *
+     * @return An Animation object for traps.
+     */
     protected Animation<TextureRegion> loadTrapAnimation() {
         Texture trapSheet = new Texture(Gdx.files.internal("objects.png")); // Adjust the file name as needed
 
@@ -415,6 +435,39 @@ public class MazeRunnerGame extends Game {
 
         return new Animation<>(0.1f, trapFrames); // Adjust the frame duration as needed
     }
+    /**
+     * Loads the animation that plays when the player possesses the key.
+     *
+     * @return An Animation object for the key possession state.
+     */
+    protected Animation<TextureRegion> loadKeyAnimation() {
+        Texture keySheet = new Texture(Gdx.files.internal("objects.OwOt.png"));
+
+        int frameWidth = 16;
+        int frameHeight = 16;
+        int animationFrames = 4;
+        int startCol = 0;
+        int startRow = 4;
+
+        Array<TextureRegion> keyFrames = new Array<>(TextureRegion.class);
+
+        for (int col = 0; col < animationFrames; col++) {
+            // Calculate the x and y position for each frame in the sprite sheet
+            int x = (startCol + col) * frameWidth;
+            int y = startRow * frameHeight;
+
+            keyFrames.add(new TextureRegion(keySheet, x, y, frameWidth, frameHeight));
+        }
+
+
+        return new Animation<>(0.1f, keyFrames); // Adjust the frame duration as needed
+    }
+
+    /**
+     * Loads the death animation for enemies.
+     *
+     * @return An Animation object for enemy death.
+     */
 
     protected Animation<TextureRegion> loadEnemyDeathAnimation() {
         Texture keySheet = new Texture(Gdx.files.internal("objects.OwOt.png"));
@@ -438,29 +491,12 @@ public class MazeRunnerGame extends Game {
 
         return new Animation<>(0.1f, keyFrames);
     }
+    /**
+     * Loads the animation for lava in the game.
+     *
+     * @return An Animation object for lava.
+     */
 
-    protected Animation<TextureRegion> loadKeyAnimation() {
-        Texture keySheet = new Texture(Gdx.files.internal("objects.OwOt.png"));
-
-        int frameWidth = 16;
-        int frameHeight = 16;
-        int animationFrames = 4;
-        int startCol = 0;
-        int startRow = 4;
-
-        Array<TextureRegion> keyFrames = new Array<>(TextureRegion.class);
-
-        for (int col = 0; col < animationFrames; col++) {
-            // Calculate the x and y position for each frame in the sprite sheet
-            int x = (startCol + col) * frameWidth;
-            int y = startRow * frameHeight;
-
-            keyFrames.add(new TextureRegion(keySheet, x, y, frameWidth, frameHeight));
-        }
-
-
-        return new Animation<>(0.1f, keyFrames); // Adjust the frame duration as needed
-    }
     protected Animation<TextureRegion> loadLavaAnimation() {
         Texture lavaSheet = new Texture(Gdx.files.internal("lava.png")); // Adjust the file name as needed
 
@@ -491,7 +527,44 @@ public class MazeRunnerGame extends Game {
         spriteBatch.dispose(); // Dispose the spriteBatch
         skin.dispose(); // Dispose the skin
         mazeElementsTexture.dispose(); // Dispose the texture
+        // Dispose screens
+        if (menuScreen != null) {
+            menuScreen.dispose();
+        }
+        if (gameScreen != null) {
+            gameScreen.dispose();
+        }
 
+        // Dispose textures
+        if (mazeElementsTexture != null) {
+            mazeElementsTexture.dispose();
+        }
+        if (obstaclesTexture != null) {
+            obstaclesTexture.dispose();
+        }
+        if (mobsTexture != null) {
+            mobsTexture.dispose();
+        }
+        if (chestTexture != null) {
+            chestTexture.dispose();
+        }
+        if (collectiblesTexture != null) {
+            collectiblesTexture.dispose();
+        }
+
+        // Dispose music
+        if (backgroundMusic != null) {
+            backgroundMusic.dispose();
+        }
+        if (gameOverMusic != null) {
+            gameOverMusic.dispose();
+        }
+        if (gameMusic != null) {
+            gameMusic.dispose();
+        }
+        if (victoryMusic != null) {
+            victoryMusic.dispose();
+        }
 
     }
 
@@ -541,14 +614,6 @@ public class MazeRunnerGame extends Game {
     public TextureRegion getEmptyHeartTexture() {
         return emptyHeartTexture;
     }
-
-//    public TextureRegion getKeyTexture() {
-//        return keyTexture;
-//    }
-//
-//    public TextureRegion getNoKeyTexture() {
-//        return noKeyTexture;
-//    }
 
     public Animation<TextureRegion> getEnemyDownAnimation() {
         return enemyDownAnimation;

@@ -17,12 +17,20 @@ import games.spooky.gdx.nativefilechooser.NativeFileChooserCallback;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserConfiguration;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserIntent;
 import org.w3c.dom.Text;
-
+/**
+ * The VictoryScreen class displays the victory screen after a player has successfully completed the maze.
+ * It allows the player to select a new maze or return to the main menu.
+ */
 public class VictoryScreen implements Screen {
     private final MazeRunnerGame game;
     private final Stage stage;
     private Texture backgroundImage;
 
+    /**
+     * Constructs a VictoryScreen with the specified game.
+     *
+     * @param game The MazeRunnerGame instance.
+     */
     public VictoryScreen(MazeRunnerGame game) {
         this.game = game;
         OrthographicCamera camera = new OrthographicCamera();
@@ -83,6 +91,13 @@ public class VictoryScreen implements Screen {
         });
     }
 
+    /**
+     * Renders the victory screen with a background image and UI elements.
+     * This method clears the screen with a specific color, draws a background image, and updates and draws the stage.
+     * It ensures a consistent and visually appealing display for the end-user.
+     *
+     * @param delta The time in seconds since the last render. Used for animation and game logic updates.
+     */
     @Override
     public void render(float delta) {
         // Convert RGB values to OpenGL's 0.0 to 1.0 range

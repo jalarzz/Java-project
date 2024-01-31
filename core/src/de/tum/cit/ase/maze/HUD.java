@@ -30,7 +30,16 @@ public class HUD {
     private Label invincibilityLabel; // Label for displaying invincibility countdown
 
 
-
+    /**
+     * Constructs a HUD display with heart icons for lives, a key animation for key possession status,
+     * and an optional message display for in-game notifications.
+     *
+     * @param fullHeart TextureRegion for a full heart icon.
+     * @param emptyHeart TextureRegion for an empty heart icon.
+     * @param keyAnimation Animation for the key when the player possesses it.
+     * @param noKeyAnimation Animation for the key when the player does not possess it.
+     * @param initialLives The initial number of lives to display.
+     */
 
     public HUD(TextureRegion fullHeart, TextureRegion emptyHeart, Animation<TextureRegion> keyAnimation, Animation<TextureRegion> noKeyAnimation, int initialLives) {
 
@@ -85,6 +94,11 @@ public class HUD {
 
 
     }
+    /**
+     * Displays a temporary message on the HUD.
+     *
+     * @param messageText The text of the message to display.
+     */
 
     public void showMessage(String messageText) {
         messageLabel.setText(messageText); // Set the text of the message
@@ -108,20 +122,35 @@ public class HUD {
     }
 
 
-
+    /**
+     * Updates the display of player lives in the HUD based on the current number of lives.
+     *
+     * @param currentLives The current number of lives the player has.
+     * @param fullHeart The texture to use for a full heart (life available).
+     * @param emptyHeart The texture to use for an empty heart (life lost).
+     */
     public void updateHearts(int currentLives, TextureRegion fullHeart, TextureRegion emptyHeart) {
         for (int i = 0; i < hearts.length; i++) {
             hearts[i].setDrawable(new TextureRegionDrawable(i < currentLives ? fullHeart : emptyHeart));
         }
     }
-
+    /**
+     * Updates the key icon in the HUD based on whether the player currently has a key.
+     *
+     * @param delta The time in seconds since the last frame.
+     * @param hasKey A boolean indicating whether the player currently possesses a key.
+     */
     public void updateKey(float delta, boolean hasKey) {
         stateTime += delta; // Update stateTime with the time elapsed since the last frame
 
         Animation<TextureRegion> currentAnimation = hasKey ? noKeyAnimation : keyAnimation;
         keyImage.setDrawable(new TextureRegionDrawable(currentAnimation.getKeyFrame(stateTime, true)));
     }
-
+    /**
+     * Displays a notification when the exit is reached by the player.
+     *
+     * @param reachedExit A boolean indicating whether the player has reached the exit.
+     */
     public void updateExit(boolean reachedExit) {
         if(reachedExit){
             Label exitLabel = new Label("Exit reached", new Label.LabelStyle(new BitmapFont(), Color.WHITE));

@@ -25,7 +25,7 @@ public class Character extends MazeElement implements Movable {
     private static final int TILE_SIZE = 16; // each tile is 16x16
     private static final int CHAR_WIDTH = 16; // Character width
     private static final int CHAR_HEIGHT = 32; // Character height
-    private static final float INVULNERABILITY_TIME = 3.0f; // 2 seconds of invulnerability
+    private static final float INVULNERABILITY_TIME = 3.0f; // Duration of invulnerability after losing a life.
     private float invulnerabilityTimer = 0;
     private Sound loseLife;
     private Sound keyObtained;
@@ -38,15 +38,14 @@ public class Character extends MazeElement implements Movable {
 
 
     /**
-     * Constructor for the Character class.
+     * Constructs a character with given parameters.
      *
-     * @param unarmedAnimations        Array of animations for each direction.
-     * @param armedAnimations        Array of animations for each direction.
-     * @param x                 Initial x-coordinate of the character.
-     * @param y                 Initial y-coordinate of the character.
-     * @param lives             Number of lives the character starts with.
-     * @param unarmedAnimations
-     * @param armedAnimations
+     * @param x The initial x-coordinate of the character.
+     * @param y The initial y-coordinate of the character.
+     * @param lives The number of lives the character starts with.
+     * @param unarmedAnimations Array of animations for the character when unarmed.
+     * @param armedAnimations Array of animations for the character when armed.
+     * @param camera The camera through which the character is viewed.
      */
     public Character(float x, float y, int lives, Animation<TextureRegion>[] unarmedAnimations, Animation<TextureRegion>[] armedAnimations, OrthographicCamera camera) {
         super(null, x, y,CHAR_WIDTH,CHAR_HEIGHT); // texture is set to null initially
