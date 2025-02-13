@@ -3,7 +3,7 @@
     <option name="ALTERNATIVE_JRE_PATH" value="17" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="de.tum.cit.ase.maze.DesktopLauncher" />
-    <module name="itp2324itp2324projectwork-thu3mu1zhalargvantsat.desktop.main" />
+    <module name="Java-project" />
     <option name="PROGRAM_PARAMETERS" value="${$PROJECT_DIR$/assets}" />
     <option name="VM_PARAMETERS" value="-XstartOnFirstThread" />
     <extension name="coverage">

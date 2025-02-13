@@ -5,6 +5,8 @@ Overview
 Maze Runner: Froggo's Quest is a captivating 2D top-down puzzle game developed with the libGDX framework. Dive into an adventure where Froggo, the game's protagonist, embarks on a quest to battle the forces of capitalism, represented by Oligopoly Uncles—fair-use reproductions of monopoly men with inaccuracies such as monocles. Navigate through intricately designed mazes, overcome obstacles, and help Froggo find a better life. This game features exclusive pixel artwork by Salome Tsitskishvili, commissioned specifically for this journey, bringing a unique aesthetic to Froggo's world.
 
 
+![ss1.png](ss1.png)
+![ss2.png](ss2.png)
 Project Structure and Code Hierarchy Overview
 ![img.png](img.png)
 
